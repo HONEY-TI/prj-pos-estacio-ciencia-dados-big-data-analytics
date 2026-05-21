@@ -147,6 +147,7 @@ monoRepo/
 # =========================
 **/.log_erros/
 *.md
+!/README.md
 
 # =========================
 # Media files (optional rule - keep only if desired)
