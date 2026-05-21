@@ -2,7 +2,7 @@
 
 Repositório central dos estudos, anotações, exercícios e projetos desenvolvidos durante a pós-graduação em **Ciência de Dados e Big Data Analytics**, cursada na **Estácio de Sá**.
 
-Este espaço funciona como um ponto de entrada para os módulos do curso afim de organizar e manter um mono repositório. Cada disciplina foi organizada em um sub-repositório próprio, facilitando a separação dos conteúdos por tema, semestre e área de estudo.
+Este espaço funciona como um ponto de entrada para os módulos do curso, a fim de organizar e manter um monorepositório. Cada disciplina foi organizada em um sub-repositório próprio, facilitando a separação dos conteúdos por tema, semestre e área de estudo.
 
 ## 🧭 Visão Geral
 
@@ -110,7 +110,6 @@ Função:
 
 Observações importantes:
 
-- o nome atual do arquivo possui um espaço antes de `install.sh`, por isso o caminho precisa ser escapado com `\` ou informado entre aspas;
 - o script tenta usar `apt` ou `yum`, sendo mais indicado para ambientes Linux;
 - pode solicitar senha de administrador por causa do uso de `sudo`.
 

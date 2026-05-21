@@ -10,3 +10,9 @@
 [submodule "sem2-tecnologias-avancadas"]
 	path = sem2-tecnologias-avancadas
 	url = https://github.com/alexribeirofaria/sem2-tecnologias-avancadas.git
+[submodule "sem1-projeto-analitico"]
+	path = sem1-projeto-analitico
+	url = https://github.com/alexribeirofaria/sem1-projeto-analitico.git
+[submodule "sem1-sistemas-deaprendizado-de-maquina"]
+	path = sem1-sistemas-deaprendizado-de-maquina
+	url = https://github.com/alexribeirofaria/sem1-sistemas-deaprendizado-de-maquina.git
