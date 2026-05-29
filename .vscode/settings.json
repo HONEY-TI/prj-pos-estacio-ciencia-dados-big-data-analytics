@@ -1,0 +1,4 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "r.interpreterPath": "http://localhost:8787/"
+}
