@@ -1,0 +1,19 @@
+services:
+  rstudio:
+    build: .
+    container_name: estacio-dev-container
+    ports:
+      - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
+      - "8888:8888" # http://localhost:8888/ 
+    environment:
+      PASSWORD: "toor"
+    volumes:
+      - ../workspace:/home/rstudio/workspace
+      - ../workspace/.vscode/extensions:/root/.vscode-server/extensions
+    restart: unless-stopped
+    shm_size: "2g"
+    logging:
+      driver: json-file
+      options:
+        max-size: "2m"
+        max-file: "1"
