@@ -10,6 +10,114 @@ O curso reúne fundamentos de programação, análise de dados, visualização, 
 
 Neste repositório principal estão concentradas as referências para acesso aos módulos, enquanto cada sub-repositório guarda os materiais específicos de cada disciplina.
 
+## 🧪 Ambiente de Desenvolvimento (Docker)
+
+O projeto utiliza um ambiente Docker para garantir padronização, reprodutibilidade e isolamento das ferramentas utilizadas na pós-graduação em Ciência de Dados.
+
+A arquitetura foi desenhada com separação de responsabilidades por container, simulando um ambiente profissional de engenharia de dados.
+
+---
+
+### 📊 Container do RStudio Server (R)
+
+Ambiente dedicado para desenvolvimento em R baseado na imagem do Rocker Project.
+
+**Responsabilidades:**
+- Análise estatística e modelagem de dados
+- Desenvolvimento de scripts em R
+- Uso do RStudio via navegador
+- Exploração de dados com `tidyverse`
+- Construção de relatórios e pipelines analíticos
+
+**Acesso:**
+```text
+http://localhost:8787
+```
+
+**Usuário padrão:**
+```text
+rstudio
+```
+
+**Senha:** definida no `docker-compose.yml` (variável `PASSWORD`)
+
+**Pacotes comuns utilizados:**
+- tidyverse
+- data.table
+- shiny
+- ggplot2
+
+---
+
+### 📓 Container do JupyterLab (Python)
+
+Ambiente dedicado para desenvolvimento em Python com suporte a notebooks interativos.
+
+**Responsabilidades:**
+- Análise exploratória de dados (EDA)
+- Machine Learning com scikit-learn
+- Visualização com matplotlib e seaborn
+- Processamento de dados com pandas e polars
+- Execução de notebooks (.ipynb)
+- Suporte a kernel R via IRkernel
+
+**Acesso:**
+```text
+http://localhost:8888
+```
+
+**Principais bibliotecas:**
+- numpy
+- pandas
+- matplotlib
+- seaborn
+- scikit-learn
+- pyarrow
+- polars
+
+---
+
+### 🔄 Integração entre os containers
+
+Apesar de isolados, os containers compartilham um ambiente comum de trabalho:
+
+**Volume compartilhado:**
+```text
+/workspace
+```
+
+**Mapeamento no host:**
+```text
+../workspace
+```
+
+**Permite:**
+- uso conjunto de R e Python no mesmo projeto
+- troca de dados entre notebooks e scripts R
+- criação de pipelines híbridos (R + Python)
+- padronização do ambiente de estudo
+
+---
+
+### 🧱 Por que essa arquitetura foi usada?
+
+A separação em containers foi adotada para simular um ambiente real de engenharia de dados e garantir:
+
+- isolamento de dependências entre R e Python
+- maior estabilidade do ambiente
+- facilidade de manutenção e atualização
+- escalabilidade do ambiente de estudo
+- organização profissional do workflow
+
+---
+
+### ⚙️ Observações técnicas
+
+- Os containers são independentes e podem ser reiniciados separadamente
+- O workspace é o único ponto compartilhado entre eles
+- Cada container pode ser atualizado sem impactar o outro
+- Ideal para estudos híbridos de Ciência de Dados
+
 ## 📚 Módulos do Curso
 
 | Módulo | Descrição |
@@ -25,8 +133,9 @@ Os conteúdos do curso estão organizados como submódulos Git:
 
 | Sub-repositório | Link |
 | --- | --- |
-| 🐍 `sem1-linguagem-python-big-data` | <https://github.com/alexribeirofaria/sem1-linguagem-python-big-data.git> |
 | 📊 `sem1-business-analytics-npg7688` | <https://github.com/alexribeirofaria/sem1-business-analytics-npg7688.git> |
+| 🐍 `sem1-linguagem-python-big-data` | <https://github.com/alexribeirofaria/sem1-linguagem-python-big-data.git> |
+| 📊 `sem1-projeto-analitico` | <https://github.com/alexribeirofaria/sem1-projeto-analitico.git> |
 | 🧠 `sem1-aprendizado-profundo-deep-learning` | <https://github.com/alexribeirofaria/sem1-aprendizado-profundo-deep-learning.git> |
 | 🚀 `sem2-tecnologias-avancadas` | <https://github.com/alexribeirofaria/sem2-tecnologias-avancadas.git> |
 
