@@ -1,0 +1,94 @@
+# =========================
+# Git
+# =========================
+.git
+**/.git
+
+# =========================
+# Node / Angular / JS
+# =========================
+node_modules/
+**/node_modules/
+dist/
+build/
+tmp/
+.cache/
+**/.angular/
+**/out-tsc/
+**/coverage/
+**/test-results/
+**/playwright-report/
+**/npm-debug.log*
+**/yarn-error.log*
+
+# =========================
+# Python
+# =========================
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+**/venv/
+**/.venv/
+**/env/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.history/
+.c9/
+*.swp
+*.swo
+*.sublime-workspace
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+**/.env
+**/.env.*
+*.env
+*.key
+*.pem
+*.crt
+
+# =========================
+# Logs
+# =========================
+*.log
+**/*.log
+logs/
+**/logs/
+**/.log_erros/
+
+# =========================
+# Build / Frameworks
+# =========================
+.next/
+.nuxt/
+build/
+dist/
+tmp/
+.cache/
+**/.sass-cache/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Workspace / misc
+# =========================
+
