@@ -66,7 +66,7 @@ testem.log
 *.sublime-workspace
 .history/
 
-.vscode/
+**/.vscode/extensions
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -146,8 +146,7 @@ monoRepo/
 # Logs / errors / misc
 # =========================
 **/.log_erros/
-*.md
-!/README.md
+
 
 # =========================
 # Media files (optional rule - keep only if desired)
