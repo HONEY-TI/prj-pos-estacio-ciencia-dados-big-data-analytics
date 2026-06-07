@@ -1,6 +1,6 @@
 {
 	"terminal.integrated.env.linux": {
-		"PATH": "/opt/venv/bin:${env:PATH}"
+		"PATH": "/opt/venv/bin:${env:PATH}/workspace"
 	},
 	"files.autoSave": "afterDelay",
 	"github.copilot.enable": {
@@ -36,6 +36,8 @@
 	"ruff.organizeImports": true,
 	"python.languageServer": "Jedi",
 	"python.defaultInterpreterPath": "python",
+	"python.terminal.activateEnvironment": true,
+	"python.terminal.activateEnvInCurrentTerminal": true,
 	"python.analysis.indexing": true,
 	"python.analysis.inlayHints.variableTypes": true,
 	"python.analysis.inlayHints.functionReturnTypes": true,

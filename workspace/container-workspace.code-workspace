@@ -6,7 +6,7 @@
 	],
 	"settings": {
 		"terminal.integrated.env.linux": {
-			"PATH": "/opt/venv/bin:${env:PATH}"
+			"PATH": "/opt/venv/bin:${env:PATH}/workspace"
 		},
 		"files.autoSave": "afterDelay",
 		"github.copilot.enable": {
@@ -41,6 +41,9 @@
 		"ruff.enable": true,
 		"ruff.organizeImports": true,
 		"python.languageServer": "Jedi",
+		"python.defaultInterpreterPath": "/opt/venv/bin/python", // ← adi
+		"python.terminal.activateEnvironment": true,
+		"python.terminal.activateEnvInCurrentTerminal": true, // ← adiciona
 		"python.analysis.indexing": true,
 		"python.analysis.inlayHints.variableTypes": true,
 		"python.analysis.inlayHints.functionReturnTypes": true,
@@ -49,5 +52,6 @@
 		"pythonIndent.useTabOnHangingIndent": true,
 		"pythonIndent.trimLinesWithOnlyWhitespace": true,
 		"pythonIndent.keepHangingBracketOnLine": true,
+		"r.lsp.promptToInstall": false,
 	}
 }

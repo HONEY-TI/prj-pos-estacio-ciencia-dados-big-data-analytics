@@ -1,0 +1,130 @@
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>
+
+# LICENSE
+
+## Proprietary Software License – All Rights Reserved
+
+Copyright (c) Alex Ribeiro de Faria. All rights reserved.
+
+---
+
+## Legal Protection
+
+This software is protected under applicable intellectual property laws, including but not limited to:
+
+- Brazilian Copyright Law (Lei nº 9.610/1998)
+- International copyright treaties and conventions
+
+Under Lei nº 9.610/1998, software and source code are considered intellectual works protected by copyright. The author holds exclusive moral and patrimonial rights over the work, including the rights of reproduction, distribution, modification, and commercialization.
+
+Any unauthorized use may constitute a violation of copyright law and may result in civil and/or criminal liability.
+
+---
+
+## Ownership
+
+This software is the exclusive intellectual property of:
+
+**Alex Ribeiro de Faria**
+
+---
+
+## Grant of Rights
+
+No rights are granted to any individual or entity unless explicitly authorized in writing by the author.
+
+This software is provided strictly for **viewing purposes only**.
+
+---
+
+## Strict Prohibitions
+
+Without prior written permission from the author, it is strictly prohibited to:
+
+- Use this software for any commercial or non-commercial purpose
+- Copy, reproduce, or redistribute any part of the code
+- Modify, adapt, or create derivative works
+- Publish, share, or disclose the code in any form
+- Reverse engineer, decompile, or disassemble the software
+- Store, index, or include this software in repositories (public or private)
+- Use this software as part of any other project or system
+
+---
+
+## Educational & Research Exception
+
+Limited use for educational, academic, research, and learning purposes may be permitted exclusively in non-commercial contexts, provided that full and visible attribution to the original author and repository is maintained.
+
+Any educational usage must include proper bibliographic reference and explicit citation in:
+- academic materials;
+- research papers;
+- documentation;
+- presentations;
+- studies;
+- technical articles;
+- educational repositories;
+- learning content;
+- derived academic materials.
+
+This exception does not grant:
+- ownership rights;
+- redistribution rights;
+- sublicensing rights;
+- commercial usage rights;
+- permission to republish the software;
+- permission to remove authorship or attribution notices.
+
+All original intellectual property, authorship, and repository ownership remain exclusively with the original author.
+
+---
+
+## Artificial Intelligence and Machine Learning Restrictions
+
+It is strictly prohibited to:
+
+- Use this software for training, fine-tuning, or evaluation of artificial intelligence systems
+- Include this software in datasets used for machine learning or AI training
+- Use this software for embedding generation, vectorization, or model optimization
+- Scrape, crawl, or extract code for AI-related purposes
+- Use this software to develop or improve AI-assisted coding tools or generative models
+
+Any such use is expressly forbidden under the author's rights as protected by Lei nº 9.610/1998 and applicable international copyright laws.
+
+---
+
+## Enforcement
+
+Unauthorized use of this software constitutes a violation of intellectual property law and may result in legal action, including civil damages and other remedies available under applicable law.
+
+The author reserves all rights to enforce this license to the fullest extent permitted by law.
+
+---
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind, express or implied.
+
+The author shall not be liable for any damages resulting from unauthorized use or misuse of this software.
