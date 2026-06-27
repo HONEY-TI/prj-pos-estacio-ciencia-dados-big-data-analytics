@@ -11,7 +11,7 @@ services:
     environment:
       PASSWORD: "toor"
     volumes:
-      - ../workspace:/home/rstudio/workspace
+      - ../workspace:/home/rstudio/workspace:cached
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
     restart: unless-stopped
     command: ["/usr/local/bin/docker-entrypoint.sh"]    
