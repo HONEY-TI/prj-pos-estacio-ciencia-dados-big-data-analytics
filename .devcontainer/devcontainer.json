@@ -4,9 +4,9 @@
   "service": "rstudio",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
-  "workspaceFolder": "/home/rstudio/workspace", 
+  "workspaceFolder": "/workspace", 
   "mounts": [
-    "source=${localWorkspaceFolder},target=/home/rstudio/workspace,type=bind"
+    "source=${localWorkspaceFolder},target=/prj-workspace,type=bind"
   ],
   "forwardPorts": [
     8787,
