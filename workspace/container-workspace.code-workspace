@@ -2,13 +2,18 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../prj-workspace/sem2-tecnologias-avancadas"
+		},
+		{
+			"path": "../../../prj-workspace/sem2-ciclo-de-vida-e-linguagem-r"
 		}
 	],
 	"settings": {
 		"terminal.integrated.env.linux": {
 			"PATH": "/opt/venv/bin:${env:PATH}/workspace"
 		},
-		"files.autoSave": "afterDelay",
 		"github.copilot.enable": {
 			"*": false,
 			"plaintext": false,
@@ -16,42 +21,7 @@
 			"scminput": false
 		},
 		"chat.agent.enabled": false,
-		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": "always",
-			"source.organizeImports": "always"
-		},
-		"editor.inlineSuggest.enabled": false,
-		"editor.lightbulb.enabled": "onCode",
-		"editor.tabSize": 2,
-		"editor.insertSpaces": true,
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "charliermarsh.ruff",
-		"[python]": {
-			"editor.formatOnSave": true,
-			"editor.defaultFormatter": "charliermarsh.ruff"
-		},
-		"[json]": {
-			"editor.defaultFormatter": "vscode.json-language-features"
-		},
-		"editor.quickSuggestions": {
-			"other": true,
-			"comments": false,
-			"strings": false
-		},
-		"ruff.enable": true,
-		"ruff.organizeImports": true,
 		"python.languageServer": "Jedi",
-		"python.defaultInterpreterPath": "/opt/venv/bin/python", // ← adi
-		"python.terminal.activateEnvironment": true,
-		"python.terminal.activateEnvInCurrentTerminal": true, // ← adiciona
-		"python.analysis.indexing": true,
-		"python.analysis.inlayHints.variableTypes": true,
-		"python.analysis.inlayHints.functionReturnTypes": true,
-		"python.analysis.inlayHints.callArgumentNames": "all",
-		"python.analysis.completeFunctionParens": true,
-		"pythonIndent.useTabOnHangingIndent": true,
-		"pythonIndent.trimLinesWithOnlyWhitespace": true,
-		"pythonIndent.keepHangingBracketOnLine": true,
-		"r.lsp.promptToInstall": false,
+		"r.lsp.promptToInstall": false
 	}
 }
