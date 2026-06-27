@@ -1,10 +1,8 @@
 {
-  "name": "R + Python DevContainer",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "name": "rstudio-dev-base",
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "rstudio",
   "remoteUser": "rstudio",
-  "containerUser": "rstudio",
   "updateRemoteUserUID": true,
   "workspaceFolder": "/home/rstudio/workspace", 
   "mounts": [
@@ -20,7 +18,8 @@
         "ms-python.python",
         "ms-toolsai.jupyter",
         "REditorSupport.r",
-        "reditorsupport.r-lsp"
+        "reditorsupport.r-lsp",
+        "reditorsupport.r"
       ]
     }
   }
