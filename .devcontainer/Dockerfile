@@ -123,6 +123,6 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && chown root:root /usr/local/bin/docker-entrypoint.sh
 
-WORKDIR /home/${USERNAME}/workspace
+WORKDIR /workspace
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
