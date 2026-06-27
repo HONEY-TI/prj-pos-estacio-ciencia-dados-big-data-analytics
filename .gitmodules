@@ -22,9 +22,9 @@
 [submodule "sem2-fundamentos-e-projeto-de-big-data"]
 	path = sem2-fundamentos-e-projeto-de-big-data
 	url = https://github.com/alexribeirofaria/sem2-fundamentos-e-projeto-de-big-data.git
-[submodule "sem2-python"]
-	path = sem2-python
-	url = https://github.com/alexribeirofaria/sem2-python.git
 [submodule "sem2-desenvolvimento-pessoal-carreira-empregabilidade"]
 	path = sem2-desenvolvimento-pessoal-carreira-empregabilidade
 	url = https://github.com/alexribeirofaria/sem2-desenvolvimento-pessoal-carreira-empregabilidade.git
+[submodule "sem2-ciclo-de-vida-e-linguagem-r"]
+	path = sem2-ciclo-de-vida-e-linguagem-r
+	url = https://github.com/alexribeirofaria/sem2-ciclo-de-vida-e-linguagem-r.git
