@@ -175,6 +175,7 @@ typings/
 .jupyter_cache/
 .ipython/
 .profile_default/
+assets/*
 
 # =========================
 # R language
