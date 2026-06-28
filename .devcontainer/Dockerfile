@@ -95,7 +95,6 @@ RUN mkdir -p /usr/local/share/jupyter/kernels \
 #    .bash_profile → shell de login   (VS Code abre bash -l)
 # -----------------------------------------------------------------------------
 RUN cat > /home/${USERNAME}/.bashrc <<'EOF'
-source /opt/venv/bin/activate
 export PATH="/opt/venv/bin:$PATH"
  
 alias cls='clear'
@@ -103,11 +102,15 @@ alias py='python3'
 alias ll='eza -l -h --group --icons'
 alias la='eza -la -hs --group'
 alias lt='eza --tree --level=2 --group'
- 
-ls() { command eza -la --group --group-directories-first "$@"; }
- 
-PS1='\[\e[0;32m\][\[\e[1;34m\]\u\[\e[0m\]:\[\e[1;36m\]\w\[\e[0m\]\[\e[1;33m\]$\[\e[0m\]\[\e[0;32m\]]\[\e[0m\]\$'
 
+alias activate='source /opt/venv/bin/activate'
+alias deactivate='deactivate'
+
+ls() { command eza -la --group --group-directories-first "$@"; }
+
+PS1='\[\e[0;32m\][\[\e[1;34m\]\u\[\e[0m\]:\[\e[1;36m\]\w\[\e[0m\]\[\e[1;33m\]$\[\e[0m\]\[\e[0;32m\]]\[\e[0m\]\$ '
+
+source /opt/venv/bin/activate
 EOF
 
 RUN cat > /home/${USERNAME}/.bash_profile <<'EOF'
@@ -123,6 +126,6 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && chown root:root /usr/local/bin/docker-entrypoint.sh
 
-WORKDIR /workspace
+WORKDIR /home/${USERNAME}/workspace
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

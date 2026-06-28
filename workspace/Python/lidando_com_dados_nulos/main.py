@@ -1,18 +1,18 @@
+import sys
+from pathlib import Path
+
+# Garante que o pacote `libs` seja encontrado
+PYTHON_ROOT = Path(__file__).resolve().parent.parent
+if str(PYTHON_ROOT) not in sys.path:
+    sys.path.insert(0, str(PYTHON_ROOT))
+
 from sklearn.datasets import load_iris
 import pandas as pd
 import random
+from libs import get_iris_df
 
 def iris_df():
-    data_iris = load_iris()
-
-    iris_df = pd.DataFrame(
-        data_iris.data,
-        columns=data_iris.feature_names
-    )
-
-    iris_df["encoded_target"] = data_iris.target
-
-    return iris_df
+    return get_iris_df()
 
 def identificar_object(df):
     colunas_object = df.select_dtypes(include=['object']).columns.tolist()

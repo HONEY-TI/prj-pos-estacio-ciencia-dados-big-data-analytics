@@ -6,7 +6,7 @@ library(dplyr)
 iris_df <- function() {
 
   # Lê o arquivo CSV
-  df_csv <- read.csv("Iris.csv", stringsAsFactors = FALSE)
+  df_csv <- read.csv("../../datasets/Iris.csv", stringsAsFactors = FALSE)
 
   # Renomeia as colunas
   names(df_csv)[names(df_csv) == "SepalLengthCm"] <- "sepal_length"

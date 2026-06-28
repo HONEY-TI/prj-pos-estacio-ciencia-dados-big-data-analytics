@@ -1,6 +1,15 @@
+import sys
+from pathlib import Path
+
+# Garante que o pacote `libs` seja encontrado
+PYTHON_ROOT = Path(__file__).resolve().parent.parent
+if str(PYTHON_ROOT) not in sys.path:
+    sys.path.insert(0, str(PYTHON_ROOT))
+
 from sklearn.datasets import load_iris
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
+from libs import get_iris_df
 
 
 def carregar_base_iris() -> pd.DataFrame:
@@ -11,16 +20,7 @@ def carregar_base_iris() -> pd.DataFrame:
         pd.DataFrame: DataFrame contendo os atributos da base Iris
         e a coluna de classes codificadas.
     """
-    dados = load_iris()
-
-    df = pd.DataFrame(
-        dados.data,
-        columns=dados.feature_names
-    )
-
-    df["encoded_target"] = dados.target
-
-    return df
+    return get_iris_df()
 
 
 def inserir_dados_corrompidos(df: pd.DataFrame) -> pd.DataFrame:

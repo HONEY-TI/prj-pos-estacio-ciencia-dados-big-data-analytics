@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv("data.csv")
+df = pd.read_csv("../../datasets/data_reg_linear.csv")
 print(df.sample(5))
 print(df.dtypes)
 print(df.shape)

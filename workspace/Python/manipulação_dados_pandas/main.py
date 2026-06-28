@@ -1,64 +1,18 @@
+import sys
+from pathlib import Path
+
+# Garante que o pacote `libs` seja encontrado
+PYTHON_ROOT = Path(__file__).resolve().parent.parent
+if str(PYTHON_ROOT) not in sys.path:
+    sys.path.insert(0, str(PYTHON_ROOT))
+
 import pandas as pd
 from sklearn.datasets import load_iris
+from libs import  get_merge_iris_df
 
 
 def iris_df():
-    """
-    Carrega o conjunto de dados Iris a partir do arquivo CSV e do
-    dataset do sklearn, padronizando os nomes das colunas e retornando
-    um DataFrame único juntamente com os nomes das classes.
-    """
-
-    df_csv = pd.read_csv("Iris.csv")
-
-    df_csv = df_csv.rename(columns={
-        "SepalLengthCm": "sepal_length",
-        "SepalWidthCm": "sepal_width",
-        "PetalLengthCm": "petal_length",
-        "PetalWidthCm": "petal_width",
-    })
-
-    df_csv = df_csv.drop(columns=["Id"])
-
-    df_csv["encoded_target"] = df_csv["Species"].map({
-        "Iris-setosa": 0,
-        "Iris-versicolor": 1,
-        "Iris-virginica": 2,
-    })
-
-    iris = load_iris()
-
-    df_sk = pd.DataFrame(
-        iris.data,
-        columns=[
-            "sepal_length",
-            "sepal_width",
-            "petal_length",
-            "petal_width"
-        ]
-    )
-
-    df_sk["encoded_target"] = iris.target
-
-    df = df_csv.copy()
-    df["encoded_target_sk"] = df_sk["encoded_target"]
-
-    target_names = ["setosa", "versicolor", "virginica"]
-
-    df["species"] = df["encoded_target"].map(
-        lambda x: target_names[int(x)]
-    )
-
-    df = df[[
-        "sepal_length",
-        "sepal_width",
-        "petal_length",
-        "petal_width",
-        "species",
-        "encoded_target"
-    ]]
-
-    return df, target_names
+    return get_merge_iris_df()
 
 
 def display_dataframe(df):
