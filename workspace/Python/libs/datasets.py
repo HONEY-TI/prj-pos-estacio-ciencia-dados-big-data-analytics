@@ -5,6 +5,18 @@ import sys
 
 PATH = Path(__file__).resolve().parent
 
+def substituir_nulos_pela_media(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Substitui valores nulos pela média da coluna.
+
+    Args:
+        df (pd.DataFrame): DataFrame original.
+
+    Returns:
+        pd.DataFrame: DataFrame com os valores preenchidos pela média.
+    """
+    return df.fillna(df.mean(numeric_only=True))
+
 def get_iris_df():
     data_iris = load_iris()
 
@@ -15,7 +27,7 @@ def get_iris_df():
 
     iris_df["encoded_target"] = data_iris.target
 
-    return iris_df
+    return substituir_nulos_pela_media(iris_df)
 
 
 def get_merge_iris_df():
