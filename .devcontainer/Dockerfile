@@ -52,25 +52,11 @@ RUN /opt/venv/bin/pip install --upgrade pip && \
     polars \
     pyarrow \
     jupyterlab-git \
-    plotly
+    plotly \
+    pyspark
 
 # ==========================================
-# Pacotes R (root)
-# ==========================================
-#RUN R -e "install.packages(c( \
-#    'tidyverse', \
-#    'languageserver', \
-#    'IRkernel' \
-#    ), repos='https://cloud.r-project.org/')"
-
-# ==========================================
-# Kernel IRkernel global
-# ==========================================
-#RUN R -e "IRkernel::installspec(user = FALSE)"
-
-
-# -----------------------------------------------------------------------------
-# 3. R — tidyverse é o mais pesado (~15 min sem cache)
+# Pacotes R (root)— tidyverse é o mais pesado (~15 min sem cache)
 # -----------------------------------------------------------------------------
 RUN R -e "install.packages( \
         c('tidyverse', 'languageserver', 'IRkernel'), \
