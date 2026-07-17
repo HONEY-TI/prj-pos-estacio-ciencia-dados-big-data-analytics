@@ -2,7 +2,12 @@
 
 set -e
 
-SUBMODULE="sem1-aprendizado-profundo-deep-learning"
+if [ $# -ne 1 ]; then
+  echo "❌ Usage: $0 <repository-url>"
+  exit 1
+fi
+
+SUBMODULE="$0"
 
 echo "🔴 Removendo submodule: $SUBMODULE"
 
