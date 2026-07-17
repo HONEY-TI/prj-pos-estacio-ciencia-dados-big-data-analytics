@@ -20,6 +20,7 @@ env/
 ENV/
 .pyvenv/
 .claude/
+.claude
 
 # Build / packaging
 dist/
