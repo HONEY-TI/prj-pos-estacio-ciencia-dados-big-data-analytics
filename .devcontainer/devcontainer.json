@@ -4,20 +4,22 @@
   "service": "rstudio",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
-  "workspaceFolder": "/workspace", 
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/prj-workspace,type=bind"
-  ],
+  "workspaceFolder": "/workspaces", 
   "forwardPorts": [
     8787,
-    8888
+    8888,
+    7077,
+    8081, 
+    9870, 
+    9000, 
+    9864
   ],
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
         "ms-toolsai.jupyter",
-        "REditorSupport.r",
+        "reditorsupport.r-syntax",
         "reditorsupport.r-lsp",
         "reditorsupport.r",
         "ms-python.debugpy",
@@ -27,10 +29,10 @@
         "ms-toolsai.jupyter-renderers",
         "ms-toolsai.vscode-jupyter-cell-tags",
         "ms-toolsai.vscode-jupyter-slideshow",
-        "reditorsupport.r-syntax",
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
-        "mgesbert.python-path"
+        "mgesbert.python-path", 
+        "mikhail-arkhipov.r"
       ]
     }
   }
