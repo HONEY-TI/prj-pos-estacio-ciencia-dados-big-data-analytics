@@ -9,7 +9,7 @@ if [ "$1" = "" ] || [ "$1" = "/init" ]; then
             --ip='${JUPYTER_IP:-0.0.0.0}' \
             --port='${JUPYTER_PORT:-8888}' \
             --no-browser \
-            --notebook-dir='${JUPYTER_NOTEBOOK_DIR:-/home/rstudio/workspace}' \
+            --notebook-dir='${JUPYTER_NOTEBOOK_DIR:-/workspaces}' \
             --ServerApp.token='${JUPYTER_TOKEN:-}' \
             --ServerApp.password='${JUPYTER_PASSWORD:-}' \
             --ServerApp.allow_root='${JUPYTER_ALLOW_ROOT:-False}'
