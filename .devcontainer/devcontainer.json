@@ -4,13 +4,15 @@
   "service": "rstudio",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
-  "workspaceFolder": "/workspace", 
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/prj-workspace,type=bind"
-  ],
+  "workspaceFolder": "/workspaces", 
   "forwardPorts": [
     8787,
-    8888
+    8888,
+    7077,
+    8081, 
+    9870, 
+    9000, 
+    9864
   ],
   "customizations": {
     "vscode": {
@@ -30,7 +32,8 @@
         "reditorsupport.r-syntax",
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
-        "mgesbert.python-path"
+        "mgesbert.python-path", 
+        "mikhail-arkhipov.r"
       ]
     }
   }
