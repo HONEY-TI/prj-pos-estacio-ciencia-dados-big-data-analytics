@@ -3,36 +3,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
-    container_name: rstudio-dev-base
-    image: alexfariakof/rstudio-dev-base:latest
-
-    depends_on:
-      - spark-master
-      - spark-worker
-
-    ports:
-      - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
-      - "8888:8888" # http://localhost:8888/
-
+    container_name: rstudio-dev-base # docker exec -it rstudio-dev-base bash
     environment:
       PASSWORD: "toor"
-
       # Spark
       SPARK_MASTER: spark://spark-master:7077
       SPARK_HOME: /opt/spark
       JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-
+    ports:
+      - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
+      - "8888:8888" # http://localhost:8888/
     volumes:
-      - ../workspace:/home/rstudio/workspace:cached
-      - ../workspace:/workspace
+      - ../workspaces:/workspaces:cached
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
-
     restart: unless-stopped
-
-    command:
-      - /usr/local/bin/docker-entrypoint.sh
-
+    command: ["/usr/local/bin/docker-entrypoint.sh"]    
+    networks:
+      - app-network    
+    depends_on:
+      spark-master:
+        condition: service_started #ping -c 4 spark-master
+      spark-worker:
+        condition: service_started
     logging:
       driver: json-file
       options:
@@ -40,44 +32,102 @@ services:
         max-file: "1"
 
   spark-master:
-    image: bitnami/spark:3.5
-
     container_name: spark-master
-    hostname: spark-master
-
+    image: apache/spark:3.5.1    
     environment:
-      SPARK_MODE: master
-      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
-      SPARK_RPC_ENCRYPTION_ENABLED: "no"
-      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
-      SPARK_SSL_ENABLED: "no"
-
+      SPARK_NO_DAEMONIZE: "true"    
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+      SPARK_LOCAL_HOSTNAME: spark-master      
+    hostname: spark-master
     ports:
       - "7077:7077"
       - "8080:8080"
-
-    volumes:
-      - ../workspace:/workspace
+    command: >
+        /opt/spark/bin/spark-class
+        org.apache.spark.deploy.master.Master
+    mem_limit: 2g
+    cpus: 2
+    networks:
+      - app-network
+    logging:
+      driver: json-file
+      options:
+        max-size: "2m"
+        max-file: "1"
 
   spark-worker:
-    image: bitnami/spark:3.5
-
     container_name: spark-worker
-
-    depends_on:
-      - spark-master
-
+    image: apache/spark:3.5.1
     environment:
       SPARK_MODE: worker
-      SPARK_MASTER_URL: spark://spark-master:7077 #spark://localhost:7077
+      SPARK_LOCAL_HOSTNAME: spark-worker
+      SPARK_MASTER_URL: spark://spark-master:7077 #spark://localhost:7077      
       SPARK_WORKER_MEMORY: 2G
       SPARK_WORKER_CORES: 2
-
+      PYSPARK_PYTHON: /opt/venv/bin/python
+      PYSPARK_DRIVER_PYTHON: /opt/venv/bin/python
+    hostname: spark-worker
     ports:
       - "8081:8081"
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.worker.Worker
+      spark://spark-master:7077
+    networks:
+      - app-network      
+    depends_on:
+      spark-master:
+        condition: service_started #ping -c 4 spark-master
+    logging:
+      driver: json-file
+      options:
+        max-size: "2m"
+        max-file: "1"
 
+  namenode:
+    image: apache/hadoop:3
+    container_name: namenode
+    hostname: namenode
+    command: sleep infinity
+    environment:
+      HDFS_NAMENODE_USER: rstudio
+      HDFS_DATANODE_USER: rstudio
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    networks:
+      - app-network
     volumes:
-      - ../workspace:/workspace
+      - namenode-data:/data
+      - ./hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ./hadoop-config/hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml:ro
+
+  datanode:
+    image: apache/hadoop:3
+    container_name: datanode
+    hostname: datanode
+    command: sleep infinity
+    depends_on:
+      - namenode
+    environment:
+      HDFS_NAMENODE_USER: rstudio
+      HDFS_DATANODE_USER: rstudio
+    ports:
+      - "9864:9864"
+    networks:
+      - app-network
+    volumes:
+      - datanode-data:/data
+      - ./hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ./hadoop-config/hdfs-site.xml:/opt/hadooclsp/etc/hadoop/hdfs-site.xml:ro
 
 volumes:
   vscode-extensions:
+  namenode-data:
+  datanode-data:
+
+networks:
+  app-network:
+    driver: bridge  
