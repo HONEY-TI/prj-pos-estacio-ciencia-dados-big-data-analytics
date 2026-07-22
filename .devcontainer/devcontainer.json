@@ -19,7 +19,7 @@
       "extensions": [
         "ms-python.python",
         "ms-toolsai.jupyter",
-        "REditorSupport.r",
+        "reditorsupport.r-syntax",
         "reditorsupport.r-lsp",
         "reditorsupport.r",
         "ms-python.debugpy",
@@ -29,7 +29,6 @@
         "ms-toolsai.jupyter-renderers",
         "ms-toolsai.vscode-jupyter-cell-tags",
         "ms-toolsai.vscode-jupyter-slideshow",
-        "reditorsupport.r-syntax",
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
         "mgesbert.python-path", 
