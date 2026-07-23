@@ -15,6 +15,10 @@ services:
       - "8888:8888" # http://localhost:8888/
     volumes:
       - ../workspaces:/workspaces:cached
+      - ../sem2-ciclo-de-vida-e-linguagem-r:/workspaces/sem2-ciclo-de-vida-e-linguagem-r:cached
+      - ../sem2-tecnologias-avancadas:/workspaces/sem2-tecnologias-avancadas:cached
+      - ../sem2-teorias-analiticas-avancadas:/workspaces/sem2-teorias-analiticas-avancadas:cached
+      - ../sem2-fundamentos-e-projeto-de-big-data:/workspaces/sem2-fundamentos-e-projeto-de-big-data:cached      
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
     restart: unless-stopped
     command: ["/usr/local/bin/docker-entrypoint.sh"]    
