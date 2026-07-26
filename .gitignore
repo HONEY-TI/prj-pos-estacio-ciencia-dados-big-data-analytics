@@ -188,3 +188,4 @@ assets/*
 .Rproj.user/
 .Renviron
 .claulde/
+.blackbox/
