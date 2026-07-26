@@ -1,0 +1,26 @@
+{
+    "id": "CDB34756",
+    "path": "~/workspaces/R/teste-no-rstudio-postgres/main.r",
+    "project_path": "teste-no-rstudio-postgres/main.r",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1784986881172.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "194,38",
+        "scrollLine": "181"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1784986868,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1784986868,
+    "read_only": false,
+    "read_only_alternatives": []
+}

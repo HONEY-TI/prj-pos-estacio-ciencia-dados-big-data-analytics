@@ -1,6 +1,6 @@
 {
 	"terminal.integrated.env.linux": {
-		"PATH": "/opt/venv/bin:${env:PATH}/workspace"
+		"PATH": "/opt/venv/bin:${env:PATH}/workspaces"
 	},
 	"files.autoSave": "afterDelay",
 	"github.copilot.enable": {
