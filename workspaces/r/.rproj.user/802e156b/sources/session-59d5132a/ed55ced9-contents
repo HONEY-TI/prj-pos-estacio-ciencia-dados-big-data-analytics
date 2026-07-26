@@ -1,0 +1,127 @@
+# ============================================================
+# Teste de integração RStudio + PostgreSQL
+#
+# Objetivo:
+# - Validar comunicação RStudio -> PostgreSQL.
+# - Instalar dependências caso não existam.
+# - Criar tabela de teste.
+# - Inserir dados.
+# - Consultar resultado.
+#
+# PostgreSQL Docker:
+#   Host: postgres-db
+#   Porta: 5432
+#   Banco: analytics
+#   Usuário: admin
+# ============================================================
+
+
+# ============================================================
+# Verifica e instala pacotes R necessários
+# ============================================================
+
+pacotes <- c("DBI", "RPostgres")
+
+instalar <- pacotes[!(pacotes %in% installed.packages()[, "Package"])]
+
+if(length(instalar) > 0) {
+  install.packages(instalar)
+}
+
+
+# Carrega bibliotecas
+library(DBI)
+library(RPostgres)
+
+
+# ============================================================
+# Conexão PostgreSQL
+#
+# IMPORTANTE:
+# Dentro do Docker usar:
+#   postgres-db
+#
+# Não usar:
+#   localhost
+#
+# pois localhost aponta para o próprio container RStudio.
+# ============================================================
+
+con <- dbConnect(
+  RPostgres::Postgres(),
+  host = "postgres-db",
+  port = 5432,
+  dbname = "analytics",
+  user = "admin",
+  password = "admin"
+)
+
+
+# ============================================================
+# Teste de conexão
+#
+# Resultado:
+# character(0) = conectado, sem tabelas criadas
+# ============================================================
+
+dbListTables(con)
+
+
+# ============================================================
+# Criar tabela de teste
+#
+# Remove tabela anterior para permitir repetir o teste.
+# ============================================================
+
+dbExecute(
+  con,
+  "
+  DROP TABLE IF EXISTS alunos;
+
+  CREATE TABLE alunos (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100),
+    curso VARCHAR(100)
+  );
+  "
+)
+
+
+# ============================================================
+# Inserir dados
+# ============================================================
+
+dbExecute(
+  con,
+  "
+  INSERT INTO alunos(nome, curso)
+  VALUES
+  ('Alex', 'Big Data');
+  "
+)
+
+
+# ============================================================
+# Consultar resultado
+# ============================================================
+
+resultado <- dbGetQuery(
+  con,
+  "SELECT * FROM alunos;"
+)
+
+
+print(resultado)
+
+
+# Resultado esperado:
+#
+#   id  nome  curso
+#   1   Alex  Big Data
+
+
+# ============================================================
+# Encerrar conexão
+# ============================================================
+
+dbDisconnect(con)
