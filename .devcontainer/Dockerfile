@@ -61,5 +61,14 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && chown root:root /usr/local/bin/docker-entrypoint.sh
 
+# Locale
+RUN apt-get update && apt-get install -y locales \
+    && locale-gen pt_BR.UTF-8 \
+    && update-locale LANG=pt_BR.UTF-8
+
+ENV LANG=pt_BR.UTF-8
+ENV LANGUAGE=pt_BR:pt
+ENV LC_ALL=pt_BR.UTF-8
+
 WORKDIR /workspaces
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
