@@ -1,0 +1,13 @@
+{
+  "name": "blackbox",
+  "version": "1.0.0",
+  "description": "Config nativa do Blackbox — referencia o master .ai/",
+  "autoload": true,
+  "lazyLoad": true,
+  "cache": true,
+  "parallelLoad": true,
+  "maxConcurrent": 8,
+  "watch": false,
+  "debug": false,
+  "skills": []
+}
