@@ -1,18 +1,23 @@
 {
   "name": "rstudio-dev-base",
-  "dockerComposeFile": ["docker-compose.yml"],
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
   "service": "rstudio",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
-  "workspaceFolder": "/workspaces", 
+  "workspaceFolder": "/workspaces",
   "forwardPorts": [
     8787,
     8888,
     7077,
-    8081, 
-    9870, 
-    9000, 
+    8081,
+    9870,
+    9000,
     9864
+  ],
+  "mounts": [
+    "type=volume,target=/home/node/.vscode-server"
   ],
   "customizations": {
     "vscode": {
@@ -20,8 +25,9 @@
         "ms-python.python",
         "ms-toolsai.jupyter",
         "reditorsupport.r-syntax",
-        "reditorsupport.r-lsp",
-        "reditorsupport.r",
+        "reditorsupport.r-syntax@0.1.4",
+        "mikhail-arkhipov.r@0.0.32",
+        "reditorsupport.r@2.8.8",
         "ms-python.debugpy",
         "ms-python.vscode-pylance",
         "ms-python.vscode-python-envs",
@@ -31,8 +37,7 @@
         "ms-toolsai.vscode-jupyter-slideshow",
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
-        "mgesbert.python-path", 
-        "mikhail-arkhipov.r"
+        "mgesbert.python-path"
       ]
     }
   }
