@@ -1,0 +1,6 @@
+name: cluade
+version: "1.0.0"
+description: "Config nativa do OpenClaude — referencia o master .ai/"
+agents_dir: agents
+prompts_dir: prompts
+skills_dir: skills

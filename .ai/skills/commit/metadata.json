@@ -1,0 +1,5 @@
+{
+  "name": "commit",
+  "version": "1.0.0",
+  "description": "Gera mensagens de commit seguindo o padrão do projeto"
+}

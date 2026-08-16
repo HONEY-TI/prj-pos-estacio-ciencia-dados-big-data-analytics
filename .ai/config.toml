@@ -1,0 +1,9 @@
+model = "mimax M2.7"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[history]
+save = false
+
+[ui]
+theme = "dark"
