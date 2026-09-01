@@ -10,11 +10,15 @@ services:
       SPARK_MASTER: spark://spark-master:7077
       SPARK_HOME: /opt/spark
       JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      SSH_AUTH_SOCK: /tmp/ssh-agent.sock #ssh -T github-alexfaria #ssh -T gitlab-alexfaria
+    env_file:
+      - .env
     ports:
       - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
       - "8888:8888" # http://localhost:8888/
     volumes:
-      - ../workspaces:/workspaces:cached
+      - ..:/workspaces:cached
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
     restart: unless-stopped
     command: ["/usr/local/bin/docker-entrypoint.sh"]    
