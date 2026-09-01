@@ -17,7 +17,8 @@
     9864
   ],
   "mounts": [
-    "type=volume,target=/home/node/.vscode-server"
+    "type=volume,target=/home/node/.vscode-server",
+    "source=${localEnv:HOME}/.ssh,target=/home/rstudio/.ssh,type=bind"
   ],
   "customizations": {
     "vscode": {
@@ -37,7 +38,11 @@
         "ms-toolsai.vscode-jupyter-slideshow",
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
-        "mgesbert.python-path"
+        "mgesbert.python-path",
+        "mikhail-arkhipov.r@0.0.32",
+        "mathematic.vscode-pdf@0.2.1",
+        "arturock.gitstash@6.13.0",
+        "openai.chatgpt@26.825.51511"
       ]
     }
   }
