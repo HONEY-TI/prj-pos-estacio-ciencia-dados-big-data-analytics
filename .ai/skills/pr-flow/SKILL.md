@@ -21,17 +21,6 @@ description: >
 
 # 🧠 Skill: Commit Inteligente + Feature Branch + Pull Request + Documentação `.backlog`
 
-> **Changelog desta revisão** (correção de inconsistências identificadas em auditoria):
-> 1. O `stash` deixou de ser o caminho padrão para trocar de branch com working tree sujo — agora
->    é usado **apenas como fallback**, quando o checkout direto da feature branch não é possível
->    sem conflito (ver passo 4).
-> 2. A ordem do fluxo foi explicitada: o PR nasce **depois** da criação de branch/submodule/docs
->    de Feature e PR, e **antes** de qualquer commit de conteúdo. Nunca foi "PR antes de tudo".
-> 3. O passo 11 (Limpeza) executava `git pull origin "$TARGET_BRANCH"`, que na prática é
->    `git pull origin develop` — o exato comando proibido na seção "🚫 Execução de comandos Bash".
->    Corrigido para `git fetch` + `git merge --ff-only`, que nunca cria merge commit implícito e
->    não viola a proibição.
-
 > Esta skill **invoca** a skill `auto-commit` no modo por-arquivo (passo 6): Agente lê o arquivo
 > `auto-commit` naquele momento do fluxo e executa o que está descrito nele, em vez de aplicar de
 > memória uma versão resumida. Por isso as tabelas de tipo/escopo e o formato de mensagem não são
@@ -125,19 +114,7 @@ quando apenas repete/confirma uma regra do prompt.
 
 ## 🚫 Execução de comandos Bash
 
-- é proibido executar `git pull origin develop` (ou `git pull origin "$TARGET_BRANCH"`) em
-  **qualquer** passo do fluxo, incluindo a limpeza final. Sincronização com o remoto usa sempre
-  `git fetch` + `git merge --ff-only` (ver passo 11) — nunca um `pull` implícito, que poderia
-  gerar merge commit sem revisão.
-- **É proibido executar qualquer comando que deixe a branch local desatualizada em relação ao
-  remoto correspondente sem sincronizar em seguida.** Isso inclui, sem se limitar a: um
-  `checkout`/`fetch` que troca de branch mas não atualiza a referência local antes de basear
-  algo nela; um merge/rebase que é abortado sem que a branch volte a um estado sincronizado
-  conhecido; ou qualquer sequência que termine deixando `$TARGET_BRANCH` ou `$FEATURE_NAME`
-  local apontando para um commit mais antigo que o que já foi enviado ao remoto na mesma sessão.
-  Sempre que uma branch local for referenciada como base de outra operação (checkout -b, merge,
-  push), ela precisa já refletir o estado mais recente conhecido do remoto (via `fetch` +
-  `merge --ff-only`, nunca `pull`).
+- é proibido executar git pull origin develop
 - A ferramenta de Bash deve receber **exclusivamente comandos Bash válidos**.
 - Nunca enviar XML, HTML ou qualquer outro formato de marcação (além de markdown na comunicação
   com o usuário) para a ferramenta de Bash.
@@ -213,7 +190,7 @@ else
 fi
 ```
 
-Essa é a única fonte de verdade da branch alvo — usada em todo o resto do fluxo (checkout, sync,
+Essa é a única fonte de verdade da branch alvo — usada em todo o resto do fluxo (checkout, pull,
 PR `--base`, merge).
 
 ### 3. Definir nome da feature branch e slugs
@@ -275,32 +252,15 @@ fi
 - `NN` nunca é reaproveitado de uma feature diferente nem preenche lacunas deixadas por features
   removidas — é sempre `maior número existente + 1`.
 
-### 4. Sincronizar destino e criar a feature branch (stash como fallback, não padrão)
+### 4. Sincronizar destino e criar a feature branch (ainda sem commits de conteúdo)
 
 ```bash
-git fetch origin "$TARGET_BRANCH"
+git diff --quiet && git diff --cached --quiet || git stash push -u
+git checkout "$TARGET_BRANCH"
 git submodule update --init --recursive
-
-# Tenta primeiro criar a feature branch diretamente a partir do destino atualizado. O git
-# preserva automaticamente as mudanças não commitadas na nova branch quando não há conflito —
-# não precisa de stash nesse caso.
-if git checkout -b "$FEATURE_NAME" "origin/$TARGET_BRANCH" 2>/dev/null; then
-  :
-elif git checkout -b "$FEATURE_NAME" "$TARGET_BRANCH" 2>/dev/null; then
-  :
-else
-  # Fallback: só entra aqui se o checkout direto falhou por conflito real entre as mudanças
-  # não commitadas e o destino (ex.: mesmo arquivo modificado em ambos). Stash é a exceção,
-  # não a regra.
-  git stash push -u
-  git checkout "$TARGET_BRANCH"
-  git checkout -b "$FEATURE_NAME"
-  git stash pop
-fi
+git checkout -b "$FEATURE_NAME"
+git stash pop 2>/dev/null || true
 ```
-
-Agente informa em uma linha se precisou do fallback de stash (e por quê, se souber — geralmente
-conflito de merge no checkout direto), para transparência do fluxo.
 
 ### 4.1 Garantir a documentação da PR em `.backlog/pull-request/`
 
@@ -568,19 +528,15 @@ gh pr view "$PR_NUMBER" --json mergeable --jq .mergeable
 
 ```bash
 git checkout "$TARGET_BRANCH"
-git fetch origin "$TARGET_BRANCH"
-git merge --ff-only "origin/$TARGET_BRANCH"
+git pull origin "$TARGET_BRANCH"
 git submodule update --init --recursive
 git branch -d "$FEATURE_NAME" 2>/dev/null || git branch -D "$FEATURE_NAME"
 ```
 
 Este passo só roda quando o merge foi confirmado (Y) no passo 10. Apenas a feature branch é
 removida (local + remota via `--delete-branch`, já disparado pelo `gh pr merge` do passo 10). A
-branch de destino nunca é tocada além de `checkout`/`fetch`/`merge --ff-only`/atualização de
-`status: merged` em `$PR_DOC`. O `--ff-only` garante que, se o destino local não puder avançar de
-forma linear, o comando **falha em vez de criar um merge commit silencioso** — Agente avisa e
-para nesse caso. Isso substitui o antigo `git pull origin "$TARGET_BRANCH"`, que violava a
-proibição de `pull` desta skill (ver "🚫 Execução de comandos Bash").
+branch de destino nunca é tocada além de `checkout`/`pull`/atualização de `status: merged` em
+`$PR_DOC`.
 
 ---
 
@@ -597,9 +553,8 @@ proibição de `pull` desta skill (ver "🚫 Execução de comandos Bash").
 - **`$FEATURE_DOC` nunca é sobrescrito se já existir, e seu número `<NN>` nunca é trocado** — só
   é criado (com número novo) quando ausente; se já existir uma feature com o mesmo slug textual,
   o número já atribuído é reaproveitado.
-- **O PR é sempre aberto ANTES dos commits de conteúdo**, como `draft`, e **depois** da criação
-  de branch/submodule/Feature doc/PR doc; após obter o número, o título fica
-  `PR (#<PR_NUMBER>) <PR_NAME>` (a menos que um PR já exista para a branch — ver passo 5.0).
+- **O PR é sempre aberto ANTES dos commits de conteúdo**, como `draft`; após obter o número, o título fica `PR (#<PR_NUMBER>) <PR_NAME>`
+  (a menos que um PR já exista para a branch — ver passo 5.0).
 - **Todo commit de conteúdo (pai e submodules) cita `Refs: #<PR_NUMBER>`**
 - **Nunca commitar em massa sem revisar**: `git add .` é proibido em ambos os modos
 - **Nunca commitar sem PR já existente**: se `PR_NUMBER` não estiver definido, Agente para
@@ -613,10 +568,6 @@ proibição de `pull` desta skill (ver "🚫 Execução de comandos Bash").
 - **Estatísticas do PR sempre recalculadas do `git log`/`git diff`** (passo 8), nunca só da
   memória de conversa
 - **`status` em `$PR_DOC` sempre reflete o estado real** (`draft` → `open` → `merged`)
-- **Stash é fallback, não padrão**: só é usado se o `checkout -b` direto da feature branch falhar
-  por conflito real (passo 4)
-- **Nunca executar `git pull`** em nenhum passo, incluindo a limpeza — sempre `fetch` +
-  `merge --ff-only`
 - **Parar e avisar**, nunca "seguir tentando", quando um pré-requisito falha
 
 ---
@@ -627,8 +578,7 @@ proibição de `pull` desta skill (ver "🚫 Execução de comandos Bash").
 `PR_SLUG = "retry-button-reutilizavel"`, `FEATURE_TEXT_SLUG = "retry-button-reutilizavel"` →
 branch `feature/retry-button-reutilizavel` → `.backlog/features/` está vazio, então
 `.backlog/features/feature-01-retry-button-reutilizavel.md` é criado (número `01`, primeira
-feature do repo) → checkout direto a partir de `origin/develop` (sem precisar de stash) →
-`.backlog/pull-request/retry-button-reutilizavel.md` criado com `extends:
+feature do repo) → `.backlog/pull-request/retry-button-reutilizavel.md` criado com `extends:
 feature-01-retry-button-reutilizavel` → PR draft `#57`, título "Retry Button Reutilizavel" →
 changeset de 3 arquivos (ilustrando o modo por-arquivo):
 
@@ -647,8 +597,7 @@ gh pr merge 57 --squash --delete-branch \
 ```
 
 Resultado em `develop`: um único commit, `PR (#57) Retry Button Reutilizavel`, no lugar dos 3
-commits (+ o `chore: iniciar feature` vazio) que existiam na feature branch. Limpeza feita via
-`git fetch origin develop && git merge --ff-only origin/develop`, nunca `git pull`.
+commits (+ o `chore: iniciar feature` vazio) que existiam na feature branch.
 
 ## 🧪 Exemplo — modo agrupado (changeset grande, segunda feature do repo)
 
@@ -695,8 +644,6 @@ sem mesclar.
 - No modo agrupado, o limiar de 8 arquivos é um padrão ajustável, não uma regra rígida
 - A numeração `<NN>` das features é sequencial e global ao diretório `.backlog/features/`; não
   há suporte a numeração por categoria/prefixo diferente de `feature-`
-- O fallback de stash (passo 4) só é acionado em conflito real; se isso acontecer com frequência,
-  pode indicar que o destino está avançando rápido demais em paralelo ao trabalho local
 
 ## 🔮 Evoluções futuras
 

@@ -1,0 +1,9 @@
+{
+  "generatedBy": "openclaw-plugin-model-catalog-v1",
+  "providers": {
+    "github-copilot": {
+      "baseUrl": "https://api.individual.githubcopilot.com",
+      "models": []
+    }
+  }
+}

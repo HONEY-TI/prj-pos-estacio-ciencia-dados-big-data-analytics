@@ -1,5 +1,12 @@
 FROM alexfariakof/rstudio-dev-base:latest
 
+RUN apt-get update && apt-get install -y \
+    git \
+    gh \
+    openssh-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV USERNAME=rstudio
 
 # ==========================================
@@ -29,10 +36,16 @@ alias py='python3'
 alias ll='eza -l -h --group --icons'
 alias la='eza -la -hs --group'
 alias lt='eza --tree --level=2 --group'
-
 alias activate='source /opt/venv/bin/activate'
 alias deactivate='deactivate'
-alias cpu='cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+
+export VIRTUAL_ENV=/opt/venv
+export PATH="$VIRTUAL_ENV/bin:$PATH"
+
+if [[ $- == *i* ]]; then
+    [ -f "$VIRTUAL_ENV/bin/activate" ] && source "$VIRTUAL_ENV/bin/activate"
+fi
+
 
 function ls() { command eza -la --group --group-directories-first "$@"; }
 
@@ -43,11 +56,15 @@ function ls() { command eza -la --group --group-directories-first "$@"; }
 function parse_git_branch() {
     local branch
     branch=$(git branch --show-current 2>/dev/null)
-    [ -n "$branch" ] && echo " ($branch)"
+    [ -n "$branch" ] && printf " (%s)" "$branch"
 }
 
-PS1='\[\e[0;32m\][\[\e[1;34m\]\u\[\e[0m\]:\[\e[1;36m\]\w\[\e[0m\]\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\[\e[0;32m\]]\[\e[0m\]\$'
+PS1='\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+
+#PS1='\[\e[0;32m\][\[\e[1;34m\]\u\[\e[0m\]:\[\e[1;36m\]\w\[\e[0m\]\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\[\e[0;32m\]]\[\e[0m\]\$'
 EOF
+
+
 
 RUN cat > /home/${USERNAME}/.bash_profile <<'EOF'
 [ -f ~/.bashrc ] && source ~/.bashrc
@@ -60,6 +77,19 @@ RUN chown ${USERNAME}:${USERNAME} \
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && chown root:root /usr/local/bin/docker-entrypoint.sh
+
+RUN mkdir -p /home/${USERNAME}/.ssh \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh \
+    && chmod 700 /home/${USERNAME}/.ssh
+
+
+ARG GITHUB_TOKEN
+RUN if [ -n "$GITHUB_TOKEN" ]; then \
+      echo "${GITHUB_TOKEN}" | gh auth login --with-token || echo "gh auth falhou, seguindo sem autenticar"; \
+    else \
+      echo "GITHUB_TOKEN não fornecido, pulando gh auth login"; \
+    fi
+
 
 WORKDIR /workspaces
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
