@@ -347,6 +347,14 @@ AGENT_LINKS=(
   ".claude/skills|.ai/skills"
   ".claude/tools|.ai/tools"
 
+  ".openclaude/config.yaml|.ai/config/cluade.yaml"
+  ".openclaude/agents|.ai/agents"
+  ".openclaude/prompts|.ai/prompts"
+  ".openclaude/memory/history.json|.ai/memory.json"
+  ".openclaude/skills|.ai/skills"
+  ".openclaude/tools|.ai/tools"
+
+
   # -- exemplo de como registrar um agente novo (deixe comentado):
   # ".novoagente/config.json|.ai/config/novoagente.json"
   # ".novoagente/skills|.ai/skills"
@@ -355,13 +363,14 @@ AGENT_LINKS=(
 echo ""
 echo "== 2/3 — Criando symlinks por agente (${#AGENT_LINKS[@]} links registrados) =="
 
-ensure_dir ".claude/memory"   # pai de memory/history.json precisa existir antes
+ensure_dir ".ai/memory"   # pai de memory/history.json precisa existir antes
 
 for entry in "${AGENT_LINKS[@]}"; do
   link="${entry%%|*}"
   target="${entry#*|}"
   link_path "$link" "$target"
 done
+
 
 # ---------------------------------------------------------------------------
 # 3. Validação final — usa a MESMA tabela AGENT_LINKS, nada duplicado.

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 set -e
-
+git config --global user.name "Alex Ribeiro de Faria"
+git config --global user.email "135660435+alexribeirofaria@github.com"
 if [ "$1" = "" ] || [ "$1" = "/init" ]; then
 
     su - rstudio -c "

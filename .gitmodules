@@ -1,50 +1,49 @@
 [submodule "sem1-linguagem-python-big-data"]
-	path = sem1-linguagem-python-big-data
-	url = https://github.com/alexribeirofaria/sem1-linguagem-python-big-data.git
-	branch = master
+    path = sem1-linguagem-python-big-data
+    url = git@github.com:HONEY-TI/sem1-linguagem-python-big-data.git
+    branch = master
 
 [submodule "sem1-business-analytics-npg7688"]
-	path = sem1-business-analytics-npg7688
-	url = https://github.com/alexribeirofaria/sem1-business-analytics-npg7688.git
-	branch = master
+    path = sem1-business-analytics-npg7688
+    url = git@github.com:HONEY-TI/sem1-business-analytics-npg7688.git
+    branch = master
 
 [submodule "sem1-aprendizado-profundo-deep-learning"]
-	path = sem1-aprendizado-profundo-deep-learning
-	url = https://github.com/alexribeirofaria/sem1-aprendizado-profundo-deep-learning.git
-	branch = master
+    path = sem1-aprendizado-profundo-deep-learning
+    url = git@github.com:HONEY-TI/sem1-aprendizado-profundo-deep-learning.git
+    branch = master
 
 [submodule "sem2-tecnologias-avancadas"]
-	path = sem2-tecnologias-avancadas
-	url = https://github.com/alexribeirofaria/sem2-tecnologias-avancadas.git
-	branch = main
+    path = sem2-tecnologias-avancadas
+    url = git@github.com:HONEY-TI/sem2-tecnologias-avancadas.git
+    branch = main
 
 [submodule "sem1-projeto-analitico"]
-	path = sem1-projeto-analitico
-	url = https://github.com/alexribeirofaria/sem1-projeto-analitico.git
-	branch = main
+    path = sem1-projeto-analitico
+    url = git@github.com:HONEY-TI/sem1-projeto-analitico.git
+    branch = main
 
 [submodule "sem1-sistemas-deaprendizado-de-maquina"]
-	path = sem1-sistemas-deaprendizado-de-maquina
-	url = https://github.com/alexribeirofaria/sem1-sistemas-deaprendizado-de-maquina.git
-	branch = main
+    path = sem1-sistemas-deaprendizado-de-maquina
+    url = git@github.com:HONEY-TI/sem1-sistemas-deaprendizado-de-maquina.git
+    branch = main
 
 [submodule "sem2-teorias-analiticas-avancadas"]
-	path = sem2-teorias-analiticas-avancadas
-	url = https://github.com/alexribeirofaria/sem2-teorias-analiticas-avancadas.git
-	branch = main
+    path = sem2-teorias-analiticas-avancadas
+    url = git@github.com:HONEY-TI/sem2-teorias-analiticas-avancadas.git
+    branch = main
 
 [submodule "sem2-fundamentos-e-projeto-de-big-data"]
-	path = sem2-fundamentos-e-projeto-de-big-data
-	url = https://github.com/alexribeirofaria/sem2-fundamentos-e-projeto-de-big-data.git
-	branch = main
+    path = sem2-fundamentos-e-projeto-de-big-data
+    url = git@github.com:HONEY-TI/sem2-fundamentos-e-projeto-de-big-data.git
+    branch = main
 
 [submodule "sem2-desenvolvimento-pessoal-carreira-empregabilidade"]
-	path = sem2-desenvolvimento-pessoal-carreira-empregabilidade
-	url = https://github.com/alexribeirofaria/sem2-desenvolvimento-pessoal-carreira-empregabilidade.git
-	branch = main
+    path = sem2-desenvolvimento-pessoal-carreira-empregabilidade
+    url = git@github.com:HONEY-TI/sem2-desenvolvimento-pessoal-carreira-empregabilidade.git
+    branch = main
 
 [submodule "sem2-ciclo-de-vida-e-linguagem-r"]
-	path = sem2-ciclo-de-vida-e-linguagem-r
-	url = https://github.com/alexribeirofaria/sem2-ciclo-de-vida-e-linguagem-r.git
-	branch = main
-
+    path = sem2-ciclo-de-vida-e-linguagem-r
+    url = git@github.com:HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r.git
+    branch = main
