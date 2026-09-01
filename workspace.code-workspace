@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "./workspace"
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.linux": {
+			"PATH": "/opt/venv/bin:${env:PATH}/"
+		},
+		"chat.agent.enabled": false,
+		"python.languageServer": "Jedi",
+		"r.lsp.promptToInstall": false
+	}
+}

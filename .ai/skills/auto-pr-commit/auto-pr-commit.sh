@@ -17,12 +17,31 @@
 # refletem aqui automaticamente, e vice-versa. Se as regras de tipo/escopo
 # mudarem de um lado, considere replicar manualmente no outro.
 #
+# ── Revisão desta versão (paridade com a skill auto-pr-commit.md) ──────────
+#   1. Stash deixou de ser o caminho padrão para trocar de branch: agora o
+#      script tenta `checkout -b` direto a partir do destino, e só cai para
+#      stash como FALLBACK, se esse checkout direto falhar por conflito real
+#      entre mudanças não commitadas e o destino (ver _cmd_open).
+#   2. Nenhum `git pull` é mais executado em nenhum ponto do script — toda
+#      sincronização com o remoto usa `git fetch` + `git merge --ff-only`,
+#      que nunca cria merge commit implícito e falha (em vez de mesclar
+#      silenciosamente) se o destino local não avançar de forma linear.
+#   3. O título do PR agora segue sempre o formato `PR(#<numero>)-<titulo>`,
+#      normalizado assim que `PR_NUMBER` fica disponível (etapa "open") e
+#      mantido nesse formato na atualização final (etapa "finish").
+#   4. O merge final deixou de ser configurável por `MERGE_STRATEGY` — é
+#      sempre `--squash`, com `--subject` igual ao título atual do PR. A
+#      branch de destino recebe um único commit por PR; o histórico
+#      detalhado continua no PR fechado do GitHub.
+#
 # Fluxo: detectar mudanças → resolver branch de destino (develop → main) →
-#        gerar nome inteligente → feature branch → push inicial vazio →
-#        ABRIR O PR (draft) PRIMEIRO → commits (submodules primeiro, cada um
-#        já referenciando "Refs: #PR") → push → atualizar estatísticas no PR
-#        → tirar do draft → merge na branch de destino → deletar APENAS a
-#        feature branch (local + remota)
+#        gerar nome inteligente → feature branch (checkout direto do
+#        destino atualizado; stash só como fallback) → push inicial vazio →
+#        ABRIR O PR (draft) PRIMEIRO, com título `PR(#N)-...` → commits
+#        (submodules primeiro, cada um já referenciando "Refs: #PR") →
+#        push → atualizar estatísticas no PR → tirar do draft → squash
+#        merge na branch de destino (mensagem = título do PR) → deletar
+#        APENAS a feature branch (local + remota)
 #
 # IMPORTANTE: o PR é criado ANTES de qualquer commit de conteúdo, para que
 # cada commit possa referenciar "Refs: #<numero>" desde a própria mensagem.
@@ -34,17 +53,20 @@
 #   bash auto-pr-commit.sh "feature/meu-nome" # idem, com nome manual
 #   bash auto-pr-commit.sh open ["nome"]      # só abre PR + feature branch
 #   bash auto-pr-commit.sh commit             # só commita
-#   bash auto-pr-commit.sh finish             # push + stats + merge + limpeza
+#   bash auto-pr-commit.sh finish             # push + stats + squash merge + limpeza
 #
 # Variáveis opcionais:
 #   MAIN_BRANCH=develop        força a branch de destino (senão: develop -> main)
-#   MERGE_STRATEGY=--merge     --merge | --squash | --rebase
 #   COMMIT_MODE=auto           auto | per-file | grouped
 #   COMMIT_MODE_THRESHOLD=8    nº de arquivos a partir do qual "auto" vira "grouped"
+#
+# Removida nesta revisão: MERGE_STRATEGY. O merge final é sempre --squash,
+# com --subject = título atual do PR — não é mais configurável, para manter
+# paridade com a regra da skill de que a branch de destino recebe exatamente
+# um commit por PR.
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-MERGE_STRATEGY="${MERGE_STRATEGY:---merge}"
 COMMIT_MODE="${COMMIT_MODE:-auto}"
 COMMIT_MODE_THRESHOLD="${COMMIT_MODE_THRESHOLD:-8}"
 
@@ -82,6 +104,21 @@ _load_state() {
   fi
   # shellcheck disable=SC1090
   source "$STATE_FILE"
+}
+
+# Sincroniza uma branch local já existente com o remoto, sem NUNCA usar
+# `git pull`: sempre fetch + merge --ff-only. Se o histórico local não
+# puder avançar de forma linear (alguém commitou direto na branch enquanto
+# o fluxo rodava), falha explicitamente em vez de criar um merge commit
+# silencioso — nunca deixa a branch local desatualizada sem avisar.
+_sync_branch_ff_only() {
+  local branch="$1"
+  git fetch origin "$branch"
+  if ! git merge --ff-only "origin/$branch"; then
+    echo "❌ '${branch}' local não pôde avançar de forma linear (fast-forward) a partir de origin/${branch}."
+    echo "   Isso normalmente significa que alguém commitou direto nela durante o fluxo. Resolva manualmente."
+    exit 1
+  fi
 }
 
 # Resolve a branch de destino: respeita MAIN_BRANCH se definido,
@@ -497,23 +534,35 @@ _cmd_open() {
     echo "  🧠 Nome gerado automaticamente: $FEATURE_NAME"
   fi
 
-  if [[ "$current_branch" != "$TARGET_BRANCH" ]]; then
-    echo "  ⚠️  Não está na $TARGET_BRANCH. Fazendo stash (se houver algo) e checkout..."
-    local stashed=0
-    if ! git diff --quiet || ! git diff --cached --quiet; then
-      git stash push -u -m "auto-pr-commit-ci: stash antes de criar feature"
-      stashed=1
-    fi
-    git checkout "$TARGET_BRANCH"
-    git pull origin "$TARGET_BRANCH"
-    if [[ "$stashed" -eq 1 ]]; then git stash pop; fi
+  # Sincroniza a referência remota do destino (nunca `git pull`) e os
+  # submodules ANTES de decidir como criar a feature branch.
+  git fetch origin "$TARGET_BRANCH"
+  git submodule update --init --recursive
+
+  # Tenta criar a feature branch diretamente a partir do destino
+  # atualizado. O git preserva automaticamente as mudanças não commitadas
+  # na nova branch quando não há conflito — não precisa de stash nesse
+  # caso, que é o caminho normal. Stash só entra como FALLBACK.
+  local used_stash=0
+  if git checkout -b "$FEATURE_NAME" "origin/$TARGET_BRANCH" 2>/dev/null; then
+    :
+  elif git checkout -b "$FEATURE_NAME" "$TARGET_BRANCH" 2>/dev/null; then
+    :
   else
-    git pull origin "$TARGET_BRANCH"
+    echo "  ⚠️  Checkout direto da feature branch falhou (conflito real entre mudanças"
+    echo "      não commitadas e ${TARGET_BRANCH}). Usando stash como fallback..."
+    used_stash=1
+    git stash push -u -m "auto-pr-commit-ci: stash antes de criar feature"
+    git checkout "$TARGET_BRANCH"
+    _sync_branch_ff_only "$TARGET_BRANCH"
+    git checkout -b "$FEATURE_NAME"
+    git stash pop
   fi
 
-  git submodule update --init --recursive
-  git checkout -b "$FEATURE_NAME"
   echo "  ✅ Branch criada: $FEATURE_NAME"
+  if [[ "$used_stash" -eq 1 ]]; then
+    echo "  ℹ️  Fallback de stash foi necessário nesta execução (ver aviso acima)."
+  fi
 
   _log "📬 ETAPA 3 — Abrir o PR (draft) antes dos commits"
 
@@ -547,7 +596,12 @@ este PR em cada mensagem."
       --body "_PR aberto automaticamente antes dos commits. O corpo será atualizado com estatísticas assim que os commits forem realizados._")
 
     PR_NUMBER=$(gh pr view "$FEATURE_NAME" --json number --jq .number)
+
+    # Normaliza o título agora que PR_NUMBER existe: PR(#<numero>)-<placeholder>
+    gh pr edit "$PR_NUMBER" --title "PR(#${PR_NUMBER})-${PR_TITLE_PLACEHOLDER}"
+
     echo "  ✅ PR #${PR_NUMBER} criado como draft: ${pr_url}"
+    echo "  📝 Título normalizado para: PR(#${PR_NUMBER})-${PR_TITLE_PLACEHOLDER}"
   fi
 
   echo "  🔗 A partir de agora, todo commit deve citar 'Refs: #${PR_NUMBER}'"
@@ -601,7 +655,7 @@ Refs: #${PR_NUMBER}"
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ETAPA "finish" — push + estatísticas + merge + limpeza
+# ETAPA "finish" — push + estatísticas + squash merge + limpeza
 # ─────────────────────────────────────────────────────────────────────────────
 _cmd_finish() {
   _load_state
@@ -626,11 +680,14 @@ _cmd_finish() {
   scope_table=$(echo "$type_scope" | awk -F'|' '$2!=""{c[$2]++} END{for (s in c) printf "| `%s` | %d |\n", s, c[s]}' | sort)
   dominant_type=$(echo "$type_scope" | awk -F'|' '$1!=""{c[$1]++} END{max=0; for (t in c) if (c[t]>max){max=c[t]; best=t} print best}')
 
+  # Título final: SEMPRE mantém o prefixo PR(#<numero>)-, igual ao
+  # normalizado na etapa "open" — só a parte após o hífen muda para
+  # refletir o tipo dominante encontrado nos commits reais.
   local pr_title
   if [[ -n "$dominant_type" ]]; then
-    pr_title="${dominant_type}: ${PR_TITLE_PLACEHOLDER}"
+    pr_title="PR(#${PR_NUMBER})-${dominant_type}: ${PR_TITLE_PLACEHOLDER}"
   else
-    pr_title="$PR_TITLE_PLACEHOLDER"
+    pr_title="PR(#${PR_NUMBER})-${PR_TITLE_PLACEHOLDER}"
   fi
 
   local commit_log
@@ -693,13 +750,14 @@ ${commit_log}
 
 ---
 
-> 🤖 Pull Request gerado automaticamente pelo script **auto-pr-commit.sh** (CI-only, sem agente; destino: \`${TARGET_BRANCH}\`). PR aberto ANTES dos commits — cada commit já referencia \`#${PR_NUMBER}\` desde a criação."
+> 🤖 Pull Request gerado automaticamente pelo script **auto-pr-commit.sh** (CI-only, sem agente; destino: \`${TARGET_BRANCH}\`). PR aberto ANTES dos commits — cada commit já referencia \`#${PR_NUMBER}\` desde a criação. Merge final sempre por squash, mensagem = título deste PR."
 
   gh pr edit "$PR_NUMBER" --title "$pr_title" --body "$pr_body"
   gh pr ready "$PR_NUMBER"
   echo "  ✅ PR #${PR_NUMBER} atualizado com estatísticas e marcado como pronto para revisão."
+  echo "  📝 Título final: ${pr_title}"
 
-  _log "🔀 ETAPA 8 — Mesclar PR #${PR_NUMBER} na ${TARGET_BRANCH}"
+  _log "🔀 ETAPA 8 — Squash merge do PR #${PR_NUMBER} na ${TARGET_BRANCH}"
 
   local mergeable
   mergeable=$(gh pr view "$PR_NUMBER" --json mergeable --jq .mergeable)
@@ -708,15 +766,18 @@ ${commit_log}
     exit 1
   fi
 
-  gh pr merge "$PR_NUMBER" $MERGE_STRATEGY --delete-branch
+  # Merge sempre por squash, com a mensagem do commit final = título atual
+  # do PR. Não é mais configurável (MERGE_STRATEGY foi removida) — a branch
+  # de destino recebe exatamente um commit por PR.
+  gh pr merge "$PR_NUMBER" --squash --delete-branch --subject "$pr_title" --body ""
 
-  echo "  ✅ PR #${PR_NUMBER} mesclado em '${TARGET_BRANCH}'."
+  echo "  ✅ PR #${PR_NUMBER} mesclado (squash) em '${TARGET_BRANCH}' com a mensagem: ${pr_title}"
   echo "  🗑️  Branch remota '${FEATURE_NAME}' deletada pelo GitHub."
 
   _log "🧹 ETAPA 9 — Limpeza da feature branch local"
 
   git checkout "$TARGET_BRANCH"
-  git pull origin "$TARGET_BRANCH"
+  _sync_branch_ff_only "$TARGET_BRANCH"
   git submodule update --init --recursive
 
   if git branch --list "$FEATURE_NAME" | grep -q .; then
@@ -731,9 +792,9 @@ ${commit_log}
   echo "🎉 FLUXO CONCLUÍDO COM SUCESSO"
   echo ""
   echo "  📌 PR #${PR_NUMBER}: ${pr_title}"
-  echo "  🔀 Mesclado em:      ${TARGET_BRANCH}"
+  echo "  🔀 Mesclado (squash) em: ${TARGET_BRANCH}"
   echo "  🗑️  Branch removida:  ${FEATURE_NAME} (local + remota)"
-  echo "  📍 Branch atual:     ${TARGET_BRANCH} (sincronizada)"
+  echo "  📍 Branch atual:     ${TARGET_BRANCH} (sincronizada via fetch + merge --ff-only)"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 

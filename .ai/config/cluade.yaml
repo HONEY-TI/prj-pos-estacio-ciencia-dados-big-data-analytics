@@ -1,6 +1,11 @@
-name: cluade
+name: OpenClaude
 version: "1.0.0"
-description: "Config nativa do OpenClaude — referencia o master .ai/"
+description: "Config nativa do OpenClaude"
 agents_dir: agents
 prompts_dir: prompts
 skills_dir: skills
+providers:
+  github:
+    token: ${GITHUB_TOKEN}
+  openrouter:
+    api_key: ${OPEN_ROUTER}
