@@ -142,9 +142,9 @@ commit_submodules() {
 }
 
 commit_files() {
-  git status --porcelain=v1 -uall |
-  awk '{print $2}' |
-  while read -r file; do
+  git status --porcelain=v1 -uall -z |
+  while IFS= read -r -d '' entry; do
+    file="${entry:3}"
     [[ -d "$file/.git" ]] && continue
     commit_file "$file"
   done
