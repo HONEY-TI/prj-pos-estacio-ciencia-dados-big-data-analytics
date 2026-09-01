@@ -126,6 +126,7 @@ A separação em containers foi adotada para simular um ambiente real de engenha
 | 📊 **Business Analytics** | Conteúdos voltados à análise de negócios, modelagem de dados, Power BI, DAX, ETL, dashboards e interpretação visual de informações para apoio à tomada de decisão. |
 | 🧠 **Aprendizado Profundo / Deep Learning** | Fundamentos de redes neurais artificiais, regressão, redes feedforward, funções de ativação, hiperparâmetros e algoritmos de treinamento como backpropagation. |
 | 🚀 **Tecnologias Avançadas** | Espaço reservado para conteúdos do segundo semestre, com foco em tecnologias, ferramentas e práticas avançadas relacionadas à área de dados. |
+| 🏗️ **Fundamentos e Projeto de Big Data** | Princípios de Big Data, Business Intelligence, Data Warehouse e modelagem dimensional, com materiais organizados por tema. |
 
 ## 🔗 Repositórios Vinculados
 
@@ -138,6 +139,7 @@ Os conteúdos do curso estão organizados como submódulos Git:
 | 📊 `sem1-projeto-analitico` | <https://github.com/alexribeirofaria/sem1-projeto-analitico.git> |
 | 🧠 `sem1-aprendizado-profundo-deep-learning` | <https://github.com/alexribeirofaria/sem1-aprendizado-profundo-deep-learning.git> |
 | 🚀 `sem2-tecnologias-avancadas` | <https://github.com/alexribeirofaria/sem2-tecnologias-avancadas.git> |
+| 🏗️ `sem2-fundamentos-e-projeto-de-big-data` | <https://github.com/HONEY-TI/sem2-fundamentos-e-projeto-de-big-data.git> |
 
 > 🔒 A maioria dos repositórios são privados. Nesse caso, será necessário solicitar autorização de acesso ao proprietário do repositório para visualizar ou clonar o conteúdo.
 
