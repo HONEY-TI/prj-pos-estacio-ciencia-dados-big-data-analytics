@@ -1,8 +1,0 @@
-{
-  "name": "codex",
-  "version": "1.0.0",
-  "description": "Config nativa do Codex — referencia o master .ai/",
-  "runs": true,
-  "logs": true,
-  "skills": []
-}
