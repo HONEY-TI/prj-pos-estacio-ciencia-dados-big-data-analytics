@@ -47,3 +47,6 @@
     path = projects/sem2-ciclo-de-vida-e-linguagem-r
     url = git@github.com:HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r.git
     branch = main
+[submodule ".ai"]
+	path = .ai
+	url = git@github.com:HONEY-TI/.ai.git

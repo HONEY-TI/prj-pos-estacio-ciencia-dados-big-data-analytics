@@ -1,8 +1,0 @@
-{
-  "generatedBy": "openclaw-plugin-model-catalog-v1",
-  "providers": {
-    "openrouter": {
-      "apiKey": "OPEN_ROUTER"
-    }
-  }
-}
