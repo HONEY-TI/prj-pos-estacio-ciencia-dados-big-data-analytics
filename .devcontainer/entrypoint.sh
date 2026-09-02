@@ -1,8 +1,7 @@
 #!/bin/bash
 
 set -e
-git config --global user.name "Alex Ribeiro de Faria"
-git config --global user.email "135660435+alexribeirofaria@github.com"
+
 if [ "$1" = "" ] || [ "$1" = "/init" ]; then
 
     su - rstudio -c "
@@ -10,7 +9,7 @@ if [ "$1" = "" ] || [ "$1" = "/init" ]; then
             --ip='${JUPYTER_IP:-0.0.0.0}' \
             --port='${JUPYTER_PORT:-8888}' \
             --no-browser \
-            --notebook-dir='${JUPYTER_NOTEBOOK_DIR:-/workspaces}' \
+            --notebook-dir='${JUPYTER_NOTEBOOK_DIR:-/workspaces/workspace}' \
             --ServerApp.token='${JUPYTER_TOKEN:-}' \
             --ServerApp.password='${JUPYTER_PASSWORD:-}' \
             --ServerApp.allow_root='${JUPYTER_ALLOW_ROOT:-False}'
