@@ -1,3 +1,0 @@
-# Default Prompt
-
-Comportamento padrão.
