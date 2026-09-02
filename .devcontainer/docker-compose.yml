@@ -19,9 +19,10 @@ services:
       - "8888:8888" # http://localhost:8888/
     volumes:
       - ..:/workspaces:cached
+      - ../workspace/r:/home/rstudio/workspaces:cached
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
     restart: unless-stopped
-    command: ["/usr/local/bin/docker-entrypoint.sh"]    
+    #entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]    
     networks:
       - app-network    
     depends_on:
