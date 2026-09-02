@@ -11,7 +11,7 @@
 [submodule "sem1-aprendizado-profundo-deep-learning"]
     path = projects/sem1-aprendizado-profundo-deep-learning
     url = git@github.com:HONEY-TI/sem1-aprendizado-profundo-deep-learning.git
-    branch = master
+    branch = main
 
 [submodule "sem2-tecnologias-avancadas"]
     path = projects/sem2-tecnologias-avancadas
