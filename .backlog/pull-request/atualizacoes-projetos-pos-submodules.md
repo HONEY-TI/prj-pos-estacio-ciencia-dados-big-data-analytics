@@ -20,8 +20,8 @@ Feature relacionada: `.backlog/features/feature-03-atualizacoes-projetos-pos-sub
 | --- | --- |
 | Branch de origem | `feature/atualizacoes-projetos-pos-submodules` |
 | Branch de destino | `main` |
-| Total de commits | 1 |
-| Arquivos alterados | 7 |
+| Total de commits | 2 |
+| Arquivos alterados | 8 |
 
 ## 📦 Repositórios/branches atualizados
 
@@ -30,7 +30,7 @@ Feature relacionada: `.backlog/features/feature-03-atualizacoes-projetos-pos-sub
 - `sem1-sistemas-deaprendizado-de-maquina` — branch `feature/atualizacoes-projetos-pos-submodules`: 1 commit, 101 arquivos.
 - `sem2-tecnologias-avancadas` — branch `feature/atualizacoes-projetos-pos-submodules`: 1 commit, 11 arquivos.
 - `sem2-teorias-analiticas-avancadas` — branch `feature/atualizacoes-projetos-pos-submodules`: 1 commit, 14 arquivos.
-- Repositório pai — branch `feature/atualizacoes-projetos-pos-submodules`: 1 commit, 7 arquivos incluindo ponteiros e backlog.
+- Repositório pai — branch `feature/atualizacoes-projetos-pos-submodules`: 2 commits, 8 arquivos incluindo `.ai`, ponteiros e backlog.
 
 ## Checklist
 
@@ -44,3 +44,5 @@ Feature relacionada: `.backlog/features/feature-03-atualizacoes-projetos-pos-sub
 
 - **chore(projects): atualizar submódulos e documentação**
   > _02/09/2026 08:14_
+- **docs(backlog): atualizar registro da PR**
+  > _02/09/2026 08:15_
