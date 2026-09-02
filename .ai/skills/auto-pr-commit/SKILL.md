@@ -1,6 +1,6 @@
 ---
-name: pr-flow
-file: pr-flow.sh
+name: auto-pr-commit
+file: auto-pr-commit.sh
 description: >
   Executar commits (por arquivo OU agrupados por contexto, conforme o tamanho do changeset),
   criar feature branch, ABRIR O PULL REQUEST ANTES de qualquer commit de conteúdo (para que cada
@@ -12,11 +12,14 @@ description: >
   `.backlog/pull-request/<slug-da-pr>.md`, que sempre aponta (`extends:`) para uma feature em
   `.backlog/features/feature-<NN>-<slug-da-feature>.md` (numeração sequencial de 2 dígitos,
   ex.: `feature-01-retry-button-reutilizavel.md`) — se a feature ainda não existir, é criada
-  automaticamente com o próximo número disponível. Todo o fluxo é executado ao vivo por Agente
-  via ferramenta de bash, comando a comando, analisando cada diff — nunca gerando um script para
-  rodar depois. A lógica de commit por arquivo (tipo, escopo, formato de mensagem, submodules) é
-  a mesma da skill `auto-commit` — esta skill acrescenta gestão de branch/PR, documentação em
-  `.backlog` e a opção de agrupar commits por contexto.
+  automaticamente com o próximo número disponível. A feature é única para todo o changeset
+  (repositório pai + submodules) — não existe PR nem squash por submodule, apenas um PR e um
+  squash merge no repositório raiz; a referência `Refs: #PR` nos commits, sim, é um padrão
+  uniforme aplicado tanto ao pai quanto aos submodules. Todo o fluxo é executado ao vivo por
+  Agente via ferramenta de bash, comando a comando, analisando cada diff — nunca gerando um
+  script para rodar depois. A lógica de commit por arquivo (tipo, escopo, formato de mensagem,
+  submodules) é a mesma da skill `auto-commit` — esta skill acrescenta gestão de branch/PR,
+  documentação em `.backlog` e a opção de agrupar commits por contexto.
 ---
 
 # 🧠 Skill: Commit Inteligente + Feature Branch + Pull Request + Documentação `.backlog`
@@ -31,6 +34,16 @@ description: >
 >    `git pull origin develop` — o exato comando proibido na seção "🚫 Execução de comandos Bash".
 >    Corrigido para `git fetch` + `git merge --ff-only`, que nunca cria merge commit implícito e
 >    não viola a proibição.
+> 4. **Formato de título/subject padronizado**: o frontmatter de `$PR_DOC` já usava
+>    `PR(#<PR_NUMBER>)-<PR_NAME>` (sem espaço, com hífen), mas os passos 5.1, 9 e 10 usavam
+>    `PR (#${PR_NUMBER}) ${PR_NAME}` (com espaço) — uma inconsistência entre o título real do PR
+>    no GitHub e o registrado em `.backlog`. Unificado em **`PR(#${PR_NUMBER})-${PR_NAME}`** em
+>    todos os lugares (título do PR, `$PR_DOC`, `--subject` do squash).
+> 5. **Referência em submodules explicitada como padrão uniforme**: `Refs: #${PR_NUMBER}` é
+>    aplicado igualmente aos commits do repositório pai e dos submodules — o que é exclusivo do
+>    pai é a existência do PR/squash em si (únicos, um por feature), não a tag de referência.
+> 6. **Passo 9 passa a listar, por repositório/branch (pai e cada submodule), o que foi
+>    recebido** — não só o agregado de `$TOTAL_ARQUIVOS`/`$TOTAL_COMMITS`.
 
 > Esta skill **invoca** a skill `auto-commit` no modo por-arquivo (passo 6): Agente lê o arquivo
 > `auto-commit` naquele momento do fluxo e executa o que está descrito nele, em vez de aplicar de
@@ -67,7 +80,9 @@ Esta skill mantém dois arquivos Markdown fora do fluxo do GitHub, versionados n
   (`01`, `02`, `03`, ...), calculado a partir dos arquivos já existentes em
   `.backlog/features/` (maior número encontrado + 1; `01` se o diretório estiver vazio). Não é
   recriado se já existir uma feature com o mesmo texto de slug — nesse caso o número já
-  atribuído anteriormente é reaproveitado, nunca renumerado.
+  atribuído anteriormente é reaproveitado, nunca renumerado. **A feature é única para todo o
+  changeset — pai e submodules compartilham a mesma feature, a mesma branch e o mesmo PR; não
+  há uma feature/PR por submodule.**
 - **`.backlog/pull-request/<slug-da-pr>.md`** — documento da PR, com frontmatter `extends:
 feature-<NN>-<slug-da-feature>` apontando para o arquivo acima. É sempre criado (se não existir)
   ou atualizado (se já existir) por esta skill.
@@ -345,20 +360,21 @@ git push -u origin "$FEATURE_NAME"
 
 gh pr create --draft \
   --base "$TARGET_BRANCH" --head "$FEATURE_NAME" \
-  --title "PR(#$PR_NUMBER)-$PR_NAME" \
+  --title "$PR_NAME" \
   --body "_PR aberto antes dos commits de conteúdo; corpo será atualizado com estatísticas._"
 
 PR_NUMBER=$(gh pr view "$FEATURE_NAME" --json number --jq .number)
-gh pr edit "$PR_NUMBER" --title "PR (#${PR_NUMBER}) ${PR_NAME}"
+gh pr edit "$PR_NUMBER" --title "PR(#${PR_NUMBER})-${PR_NAME}"
 ```
 
-O título inicial usa `$PR_NAME`; após a criação, ele é normalizado para `PR (#<PR_NUMBER>) <PR_NAME>`.
-A partir daqui,
-`PR_NUMBER` é conhecido e usado em todos os commits seguintes e no frontmatter de `$PR_DOC`.
+O título inicial (antes de `PR_NUMBER` existir) é apenas `$PR_NAME`; assim que o número é
+conhecido, o título é normalizado para **`PR(#${PR_NUMBER})-${PR_NAME}`** — mesmo formato já
+usado no frontmatter de `$PR_DOC`, sem espaço entre `PR` e `(#N)`. A partir daqui, `PR_NUMBER` é
+conhecido e usado em todos os commits seguintes (pai e submodules) e no frontmatter de `$PR_DOC`.
 Draft é usado propositalmente: o PR existe e é rastreável, mas não sinaliza "pronto para
 revisão" enquanto só tem o commit vazio.
 
-Atualiza `$PR_DOC` com `pr: $PR_NUMBER`.
+Atualiza `$PR_DOC` com `pr: $PR_NUMBER` e `title: "PR(#${PR_NUMBER})-${PR_NAME}"`.
 
 Labels/reviewers, se solicitados, são aplicados aqui, um por vez, avisando se algum falhar:
 
@@ -372,6 +388,12 @@ gh pr edit "$PR_NUMBER" --add-reviewer "<usuario>"
 
 ### 6. Processar submodules e arquivos do repositório pai
 
+> **A feature/PR é única para todo o changeset.** Pai e submodules compartilham a mesma
+> `$FEATURE_NAME`, o mesmo `$PR_NUMBER` e o mesmo squash merge final — não existe uma feature
+> branch, um PR ou um squash separado por submodule. O que **é** um padrão uniforme, aplicado
+> igualmente ao pai e a cada submodule, é a tag de referência `Refs: #${PR_NUMBER}` em todo
+> commit de conteúdo: não é algo exclusivo do repositório pai.
+
 - **Modo por-arquivo**: Agente **invoca a skill `auto-commit`** neste ponto — não "aplica de
   cabeça" as mesmas regras, mas efetivamente lê `auto-commit` e executa o fluxo dela passo a
   passo (pré-requisitos já foram checados no passo 0 desta skill, não precisa repetir):
@@ -382,9 +404,13 @@ gh pr edit "$PR_NUMBER" --add-reviewer "<usuario>"
      arquivo do repositório pai, incluindo `$PR_DOC` e, se criado, `$FEATURE_DOC`) exatamente
      como descrito lá — mesmas tabelas de tipo/escopo, mesmo formato de commit.
   3. Único acréscimo desta chamada: o `PR_NUMBER` resolvido no passo 5 desta skill é passado
-     como contexto, então cada commit gerado por `auto-commit` inclui `Refs: #${PR_NUMBER}` (a
-     própria seção "Uso dentro de outro fluxo" de `auto-commit` cobre esse comportamento).
-  4. Quando `auto-commit` sinalizar que terminou os commits, Agente retoma o fluxo desta skill
+     como contexto, então cada commit gerado por `auto-commit` — **tanto nos submodules quanto
+     no pai** — inclui `Refs: #${PR_NUMBER}` (a própria seção "Uso dentro de outro fluxo" de
+     `auto-commit` cobre esse comportamento; a skill não distingue pai de submodule aqui).
+  4. Agente registra, à medida que cada submodule é processado, qual branch do submodule
+     recebeu os commits e um resumo do que foi alterado nele — essa informação alimenta o
+     passo 9 (não é só contagem agregada, é por repositório/branch).
+  5. Quando `auto-commit` sinalizar que terminou os commits, Agente retoma o fluxo desta skill
      no passo 7 (push) — `auto-commit` não dá push nem mexe em PR quando chamada com `PR_NUMBER`
      no contexto, isso fica por conta de quem chamou.
 
@@ -393,7 +419,8 @@ gh pr edit "$PR_NUMBER" --add-reviewer "<usuario>"
 
 - **Modo agrupado**: exclusivo desta skill, não passa por `auto-commit` — ver seção 6B abaixo.
   Submodules continuam sempre primeiro, também usando o agrupamento quando fizer sentido dentro
-  do submodule. `$PR_DOC`/`$FEATURE_DOC` entram no grupo `docs`/`backlog`.
+  do submodule, e recebendo o mesmo `Refs: #${PR_NUMBER}` que o pai. `$PR_DOC`/`$FEATURE_DOC`
+  entram no grupo `docs`/`backlog`.
 
 #### 6B. Modo agrupado (exclusivo desta skill)
 
@@ -465,16 +492,21 @@ git log "$TARGET_BRANCH".."$FEATURE_NAME" --no-merges \
   | grep -v '^chore: iniciar feature'
 ```
 
-A última saída (`subject|data`) alimenta diretamente a lista de commits do corpo do PR (passo 9)
-— um bloco por commit, com o subject em negrito e a data em itálico logo abaixo — e também as
-tabelas de "commits por tipo"/"commits por escopo", contando direto dessa lista, não do que foi
-"lembrado" durante os commits. Essa lista de commits individuais fica só no corpo do PR — ela não
-sobrevive ao squash do passo 10, que é justamente o objetivo: o histórico detalhado vive no PR
-(rastreável no GitHub), e a branch de destino recebe um único commit limpo.
+Se houver submodules no changeset, Agente roda o mesmo trio (`rev-list --count`,
+`diff --name-only | wc -l`, `log --no-merges`) **dentro de cada submodule também**, comparando a
+branch local do submodule com o commit em que ele estava antes desta execução — essa saída por
+submodule alimenta o bloco "📦 Repositórios/branches atualizados" do passo 9.
+
+A última saída (`subject|data`) do repositório pai alimenta diretamente a lista de commits do
+corpo do PR (passo 9) — um bloco por commit, com o subject em negrito e a data em itálico logo
+abaixo — e também as tabelas de "commits por tipo"/"commits por escopo", contando direto dessa
+lista, não do que foi "lembrado" durante os commits. Essa lista de commits individuais fica só no
+corpo do PR — ela não sobrevive ao squash do passo 10, que é justamente o objetivo: o histórico
+detalhado vive no PR (rastreável no GitHub), e a branch de destino recebe um único commit limpo.
 
 ### 9. Atualizar o PR com estatísticas reais e tirá-lo do draft
 
-O título permanece no formato `PR (#${PR_NUMBER}) ${PR_NAME}`. O corpo segue este template fixo:
+O título permanece no formato `PR(#${PR_NUMBER})-${PR_NAME}`. O corpo segue este template fixo:
 
 ```markdown
 ## 📋 Descrição
@@ -497,10 +529,24 @@ Feature relacionada: `${FEATURE_DOC}`
 
 ---
 
+## 📦 Repositórios/branches atualizados
+
+Um bloco por repositório afetado (repositório pai sempre por último, submodules na ordem em que
+foram processados no passo 6):
+
+- **`<nome-do-submodule>`** — branch `<branch-do-submodule>`
+  - Commits: `<N>`
+  - Arquivos alterados: `<N>` — `<lista ou resumo por escopo>`
+- **repositório pai** — branch `${FEATURE_NAME}`
+  - Commits: `<N>` (excluindo o `chore: iniciar feature` vazio)
+  - Arquivos alterados: `<N>` — inclui a atualização do ponteiro de cada submodule listado acima
+
+---
+
 ## Checklist
 
 - [x] Commits separados por contexto
-- [x] Referência do PR incluída nos commits de conteúdo
+- [x] Referência do PR incluída nos commits de conteúdo (pai e submodules)
 - [x] Alterações revisadas e enviadas para a branch
 - [ ] Revisão funcional
 - [ ] Validação em ambiente Linux/jail
@@ -525,9 +571,10 @@ gh pr ready "$PR_NUMBER"
 ```
 
 Em seguida, Agente atualiza `$PR_DOC`: `status: open`, e o corpo do arquivo local passa a
-espelhar o mesmo conteúdo enviado ao GitHub (evita que a documentação em `.backlog` fique
-desatualizada em relação ao PR real). Esta atualização de `$PR_DOC` entra em um commit próprio
-(`docs` ou dentro do grupo `docs` do passo 6B, conforme o modo).
+espelhar o mesmo conteúdo enviado ao GitHub, incluindo o bloco "📦 Repositórios/branches
+atualizados" (evita que a documentação em `.backlog` fique desatualizada em relação ao PR real).
+Esta atualização de `$PR_DOC` entra em um commit próprio (`docs` ou dentro do grupo `docs` do
+passo 6B, conforme o modo).
 
 ### 10. Verificar conflitos e mesclar (squash, mensagem = título da PR)
 
@@ -539,30 +586,32 @@ gh pr view "$PR_NUMBER" --json mergeable --jq .mergeable
   que confirmar).
 - Caso contrário → Agente **pergunta ao usuário (Y/N) antes de mesclar**, mostrando PR, branch de
   origem/destino e a estratégia fixa desta skill: **squash**, com a mensagem do commit final
-  igual ao título da PR (`PR (#${PR_NUMBER}) ${PR_NAME}`):
+  igual ao título da PR (`PR(#${PR_NUMBER})-${PR_NAME}`):
   - **Y** → executa:
     ```bash
     gh pr merge "$PR_NUMBER" --squash --delete-branch \
-      --subject "PR (#${PR_NUMBER}) ${PR_NAME}" \
+      --subject "PR(#${PR_NUMBER})-${PR_NAME}" \
       --body ""
     ```
     Isso substitui, no commit resultante em `$TARGET_BRANCH`, todas as mensagens dos commits
     individuais (por-arquivo ou agrupados, incluindo o `chore: iniciar feature ...` vazio) por
     uma única mensagem: o título da PR. O histórico detalhado por commit continua preservado no
-    PR fechado do GitHub (não é perdido, só não fica na branch de destino). Agente então
-    atualiza `$PR_DOC` para `status: merged` em um commit direto na branch de destino (passo 11
-    já está de volta em `$TARGET_BRANCH` nesse ponto).
+    PR fechado do GitHub (não é perdido, só não fica na branch de destino) — isso vale tanto
+    para os commits do pai quanto para os dos submodules, já que o squash mescla apenas o
+    repositório pai; o histórico interno de cada submodule permanece intacto na própria branch
+    do submodule. Agente então atualiza `$PR_DOC` para `status: merged` em um commit direto na
+    branch de destino (passo 11 já está de volta em `$TARGET_BRANCH` nesse ponto).
   - **N** → não mescla. O PR permanece aberto (`ready`, fora do draft) e `$PR_DOC` permanece em
     `status: open`. O passo 11 (limpeza) não roda — a feature branch não é removida enquanto o
     PR não for mesclado.
 
 > **Decisão de design**: o merge nunca é automático — mesmo sem conflito, esta skill sempre para
 > e pede confirmação explícita antes de mesclar. O PR serve como rastreabilidade e changelog
-> detalhado (commit a commit), mas o merge em si passa por um gate humano simples de Y/N, não
-> por confiança cega no `mergeable`. A estratégia é sempre squash com `--subject` = título da PR
-> — não é configurável por `--merge`/`--rebase` nesta skill, pois o objetivo explícito é que a
-> branch de destino tenha exatamente um commit por PR, nomeado com o título da PR. Se a resposta
-> for `N`, o fluxo termina no PR pronto para revisão, sem mesclar.
+> detalhado (commit a commit, pai e submodules), mas o merge em si passa por um gate humano
+> simples de Y/N, não por confiança cega no `mergeable`. A estratégia é sempre squash com
+> `--subject` = título da PR — não é configurável por `--merge`/`--rebase` nesta skill, pois o
+> objetivo explícito é que a branch de destino tenha exatamente um commit por PR, nomeado com o
+> título da PR. Se a resposta for `N`, o fluxo termina no PR pronto para revisão, sem mesclar.
 
 ### 11. Limpeza
 
@@ -597,21 +646,26 @@ proibição de `pull` desta skill (ver "🚫 Execução de comandos Bash").
 - **`$FEATURE_DOC` nunca é sobrescrito se já existir, e seu número `<NN>` nunca é trocado** — só
   é criado (com número novo) quando ausente; se já existir uma feature com o mesmo slug textual,
   o número já atribuído é reaproveitado.
+- **A feature/PR é única para pai + submodules**: não existe feature branch, PR ou squash
+  separado por submodule — todos compartilham `$FEATURE_NAME` e `$PR_NUMBER`.
 - **O PR é sempre aberto ANTES dos commits de conteúdo**, como `draft`, e **depois** da criação
   de branch/submodule/Feature doc/PR doc; após obter o número, o título fica
-  `PR (#<PR_NUMBER>) <PR_NAME>` (a menos que um PR já exista para a branch — ver passo 5.0).
-- **Todo commit de conteúdo (pai e submodules) cita `Refs: #<PR_NUMBER>`**
+  `PR(#<PR_NUMBER>)-<PR_NAME>` (a menos que um PR já exista para a branch — ver passo 5.0).
+- **Todo commit de conteúdo cita `Refs: #<PR_NUMBER>`, sem distinção entre pai e submodules** —
+  esse é um padrão uniforme do fluxo, não uma exclusividade do repositório pai.
 - **Nunca commitar em massa sem revisar**: `git add .` é proibido em ambos os modos
 - **Nunca commitar sem PR já existente**: se `PR_NUMBER` não estiver definido, Agente para
 - **Submodules sempre antes do pai**, com push próprio antes da referência ser commitada no pai
 - **Nunca mesclar com conflito**: checar `mergeable` antes de tentar
 - **Nunca mesclar sem confirmação explícita (Y/N) do usuário**, mesmo sem conflito — o merge
   nunca é automático
-- **Merge sempre por squash, com `--subject` igual ao título da PR** (`PR (#<PR_NUMBER>)
-  <PR_NAME>`) — a branch de destino nunca recebe os commits individuais, apenas um commit final
-  nomeado com o título da PR; o histórico detalhado fica preservado no PR do GitHub
-- **Estatísticas do PR sempre recalculadas do `git log`/`git diff`** (passo 8), nunca só da
-  memória de conversa
+- **Merge sempre por squash, com `--subject` igual ao título da PR** (`PR(#<PR_NUMBER>)-<PR_NAME>`)
+  — a branch de destino nunca recebe os commits individuais, apenas um commit final nomeado com
+  o título da PR; o histórico detalhado fica preservado no PR do GitHub
+- **Estatísticas do PR sempre recalculadas do `git log`/`git diff`** (passo 8), pai e
+  submodules, nunca só da memória de conversa
+- **O passo 9 sempre discrimina, por repositório/branch, o que foi recebido** — não basta o
+  agregado; cada submodule tocado aparece com sua branch e um resumo do que mudou nele
 - **`status` em `$PR_DOC` sempre reflete o estado real** (`draft` → `open` → `merged`)
 - **Stash é fallback, não padrão**: só é usado se o `checkout -b` direto da feature branch falhar
   por conflito real (passo 4)
@@ -629,8 +683,8 @@ branch `feature/retry-button-reutilizavel` → `.backlog/features/` está vazio,
 `.backlog/features/feature-01-retry-button-reutilizavel.md` é criado (número `01`, primeira
 feature do repo) → checkout direto a partir de `origin/develop` (sem precisar de stash) →
 `.backlog/pull-request/retry-button-reutilizavel.md` criado com `extends:
-feature-01-retry-button-reutilizavel` → PR draft `#57`, título "Retry Button Reutilizavel" →
-changeset de 3 arquivos (ilustrando o modo por-arquivo):
+feature-01-retry-button-reutilizavel` → PR draft `#57`, título normalizado para
+`PR(#57)-Retry Button Reutilizavel` → changeset de 3 arquivos (ilustrando o modo por-arquivo):
 
 ```
 feat(frontend-src-app-shared-retry): add retry-button.component.ts     (Refs: #57)
@@ -643,21 +697,29 @@ datas reais extraídas de `git log`. Ao confirmar o merge (Y), o passo 10 roda:
 
 ```bash
 gh pr merge 57 --squash --delete-branch \
-  --subject "PR (#57) Retry Button Reutilizavel" --body ""
+  --subject "PR(#57)-Retry Button Reutilizavel" --body ""
 ```
 
-Resultado em `develop`: um único commit, `PR (#57) Retry Button Reutilizavel`, no lugar dos 3
+Resultado em `develop`: um único commit, `PR(#57)-Retry Button Reutilizavel`, no lugar dos 3
 commits (+ o `chore: iniciar feature` vazio) que existiam na feature branch. Limpeza feita via
 `git fetch origin develop && git merge --ff-only origin/develop`, nunca `git pull`.
 
-## 🧪 Exemplo — modo agrupado (changeset grande, segunda feature do repo)
+## 🧪 Exemplo — modo agrupado (changeset grande, segunda feature do repo, com um submodule)
 
-18 arquivos, sendo 8 em `src/domain/session/*`, 6 em `src/domain/auth/*`, 3 em `test/*` e 1
-`README.md`. 18 > 8 → **modo agrupado**. `PR_NAME = "Sessao Unica Ativa Por Navegador"` →
-`.backlog/features/` já tem `feature-01-retry-button-reutilizavel.md`, então o próximo número é
-`02` → `.backlog/features/feature-02-sessao-unica-ativa-por-navegador.md` criado → branch
-`feature/sessao-unica-ativa-por-navegador` → PR draft `#58` na `develop` → grupos analisados
-(`domain-session`, `domain-auth`, `tests`, `docs`) → commits:
+18 arquivos no pai, sendo 8 em `src/domain/session/*`, 6 em `src/domain/auth/*`, 3 em `test/*` e
+1 `README.md`, mais um submodule `libs/shared-ui` com 4 arquivos alterados. 18 > 8 no pai →
+**modo agrupado** no pai (submodule processado primeiro, também agrupado dentro dele).
+`PR_NAME = "Sessao Unica Ativa Por Navegador"` → `.backlog/features/` já tem
+`feature-01-retry-button-reutilizavel.md`, então o próximo número é `02` →
+`.backlog/features/feature-02-sessao-unica-ativa-por-navegador.md` criado → branch
+`feature/sessao-unica-ativa-por-navegador` (mesma branch usada dentro do submodule) → PR draft
+`#58` na `develop`, único, no repositório pai → commits no submodule primeiro:
+
+```
+[libs/shared-ui] feat(components): atualizar 4 arquivo(s)   (Refs: #58)
+```
+
+seguidos do bump do ponteiro do submodule e dos grupos do pai:
 
 ```
 feat(domain-session): adicionar 8 arquivo(s)   (Refs: #58)
@@ -666,17 +728,20 @@ test(tests): adicionar 3 arquivo(s)            (Refs: #58)
 docs(root): atualizar 1 arquivo(s)             (Refs: #58)
 ```
 
-Seguido de: push, recontagem determinística (passo 8), atualização do PR `#58` com estatísticas
-no template do passo 9 (`MODO_TEXTO = "agrupados por contexto"`), `gh pr ready`, pergunta Y/N de
-confirmação — se `Y`:
+Seguido de: push, recontagem determinística (passo 8) — pai e submodule —, atualização do PR
+`#58` com estatísticas no template do passo 9 (`MODO_TEXTO = "agrupados por contexto"`), incluindo
+o bloco "📦 Repositórios/branches atualizados" com uma entrada para `libs/shared-ui` (branch
+`feature/sessao-unica-ativa-por-navegador`, 1 commit, 4 arquivos) e outra para o repositório pai,
+`gh pr ready`, pergunta Y/N de confirmação — se `Y`:
 
 ```bash
 gh pr merge 58 --squash --delete-branch \
-  --subject "PR (#58) Sessao Unica Ativa Por Navegador" --body ""
+  --subject "PR(#58)-Sessao Unica Ativa Por Navegador" --body ""
 ```
 
 e `$PR_DOC` atualizado para `status: merged`; se `N`, o fluxo termina com o PR aberto e pronto,
-sem mesclar.
+sem mesclar. Note que só o repositório pai recebe o squash — o submodule mantém seu próprio
+histórico de commit (o `Refs: #58` nele é rastreabilidade, não gera um PR/squash próprio).
 
 ---
 
@@ -691,7 +756,8 @@ sem mesclar.
   passo 10; não há opção de `--merge`/`--rebase` nesta skill
 - O commit vazio inicial (`chore: iniciar feature ...`) e todos os commits atômicos deixam de
   existir na branch de destino após o squash — permanecem visíveis apenas no PR fechado do
-  GitHub, não em `git log` de `$TARGET_BRANCH`
+  GitHub, não em `git log` de `$TARGET_BRANCH`. O histórico interno de cada submodule não é
+  afetado pelo squash (que só toca o repositório pai)
 - No modo agrupado, o limiar de 8 arquivos é um padrão ajustável, não uma regra rígida
 - A numeração `<NN>` das features é sequencial e global ao diretório `.backlog/features/`; não
   há suporte a numeração por categoria/prefixo diferente de `feature-`
