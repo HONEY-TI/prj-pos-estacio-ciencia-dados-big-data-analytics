@@ -6,6 +6,7 @@
   "service": "rstudio",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
+  "overrideCommand": false,
   "workspaceFolder": "/workspaces",
   "forwardPorts": [
     8787,
@@ -39,7 +40,7 @@
         "frhtylcn.pythonsnippets",
         "ericsia.pythonsnippets3",
         "mgesbert.python-path",
-        "mikhail-arkhipov.r@0.0.32",
+        "mikhail-arkhipov.r",
         "mathematic.vscode-pdf@0.2.1",
         "arturock.gitstash@6.13.0",
         "openai.chatgpt@26.825.51511"

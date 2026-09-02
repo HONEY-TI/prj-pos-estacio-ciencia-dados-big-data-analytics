@@ -36,16 +36,13 @@ alias py='python3'
 alias ll='eza -l -h --group --icons'
 alias la='eza -la -hs --group'
 alias lt='eza --tree --level=2 --group'
-alias activate='source /opt/venv/bin/activate'
-alias deactivate='deactivate'
 
 export VIRTUAL_ENV=/opt/venv
 export PATH="$VIRTUAL_ENV/bin:$PATH"
 
-if [[ $- == *i* ]]; then
-    [ -f "$VIRTUAL_ENV/bin/activate" ] && source "$VIRTUAL_ENV/bin/activate"
+if [ -f "$VIRTUAL_ENV/bin/activate" ]; then
+    source "$VIRTUAL_ENV/bin/activate"
 fi
-
 
 function ls() { command eza -la --group --group-directories-first "$@"; }
 
@@ -59,9 +56,17 @@ function parse_git_branch() {
     [ -n "$branch" ] && printf " (%s)" "$branch"
 }
 
-PS1='\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+function activate() {
+    source /opt/venv/bin/activate
+    PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+}
 
-#PS1='\[\e[0;32m\][\[\e[1;34m\]\u\[\e[0m\]:\[\e[1;36m\]\w\[\e[0m\]\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\[\e[0;32m\]]\[\e[0m\]\$'
+function desactivate() {
+    deactivate
+    PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+}
+
+PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
 EOF
 
 
@@ -90,6 +95,8 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then \
       echo "GITHUB_TOKEN não fornecido, pulando gh auth login"; \
     fi
 
+RUN git config --global user.name "Alex Ribeiro de Faria" \
+    && git config --global user.email "135660435+alexribeirofaria@github.com"
 
 WORKDIR /workspaces
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
