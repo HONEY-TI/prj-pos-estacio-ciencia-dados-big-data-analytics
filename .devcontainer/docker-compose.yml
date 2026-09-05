@@ -18,8 +18,8 @@ services:
       - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
       - "8888:8888" # http://localhost:8888/
     volumes:
-      - ..:/workspaces:cached
-      - ../workspace/r:/home/rstudio/workspaces:cached
+      - ..:/workspace:cached
+      - ../src/r:/home/rstudio/src/r:cached
       - vscode-extensions:/.vscode/extensions:/rstudio/.vscode-server/extensions
     restart: unless-stopped
     #entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]    
