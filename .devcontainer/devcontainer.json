@@ -7,7 +7,7 @@
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
   "overrideCommand": false,
-  "workspaceFolder": "/workspaces",
+  "workspaceFolder": "/workspace",
   "forwardPorts": [
     8787,
     8888,
