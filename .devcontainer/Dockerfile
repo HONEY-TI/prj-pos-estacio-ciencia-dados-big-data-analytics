@@ -98,5 +98,5 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then \
 RUN git config --global user.name "Alex Ribeiro de Faria" \
     && git config --global user.email "135660435+alexribeirofaria@github.com"
 
-WORKDIR /workspaces
+WORKDIR /workspace
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
