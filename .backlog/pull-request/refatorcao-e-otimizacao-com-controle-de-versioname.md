@@ -5,7 +5,7 @@ title: "PR(#21)-refatorcao-e-otimizacao-com-controle-de-versioname"
 branch: feature/refatorcao-e-otimizacao-com-controle-de-versioname
 base: main
 extends: feature-04-refatorcao-e-otimizacao-com-controle-de-versioname
-status: draft
+status: merged
 ---
 
 ## 📋 Descrição
