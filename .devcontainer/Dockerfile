@@ -8,8 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 ENV USERNAME=rstudio
-
-# ==========================================
+#==========
 # Permissões
 # ==========================================
 RUN mkdir -p /usr/local/share/jupyter/kernels \
@@ -46,9 +45,10 @@ fi
 
 function ls() { command eza -la --group --group-directories-first "$@"; }
 
-#=========================
-# Colorized Path with Branch
-# =========================
+# ==========================================
+# VENV + GIT BRANCH NO PROMPT (estilo Kali)
+# ==========================================
+export MY_VENV=/home/jail/opt/venv
 
 function parse_git_branch() {
     local branch
@@ -56,20 +56,41 @@ function parse_git_branch() {
     [ -n "$branch" ] && printf " (%s)" "$branch"
 }
 
+function set_venv_prompt() {
+    if [ -n "$VIRTUAL_ENV" ]; then
+        PS1='\[\e[1;34m\]┌── \[\e[1;32m\](venv) \[\e[0m\](\[\e[1;31m\]\u\[\e[0m\]㉿\[\e[1;36m\]\h\[\e[0m\])-\[\e[1;34m\][\[\e[1;32m\]\w\[\e[0m\]\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\[\e[1;34m\]]\[\e[0m\]\n\[\e[1;34m\]└─\[\e[0m\]\$ '
+    else
+        PS1='\[\e[1;34m\]┌── \[\e[0m\](\[\e[1;31m\]\u\[\e[0m\]㉿\[\e[1;36m\]\h\[\e[0m\])-\[\e[1;34m\][\[\e[1;32m\]\w\[\e[0m\]\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\[\e[1;34m\]]\[\e[0m\]\n\[\e[1;34m\]└─\[\e[0m\]\$ '
+    fi
+}
+
 function activate() {
-    source /opt/venv/bin/activate
-    PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+    local venv="${1:-$MY_VENV}"
+
+    if [ -z "$venv" ]; then
+        echo "Uso: activate /caminho/do/venv"
+        return 1
+    fi
+
+    if [ ! -f "$venv/bin/activate" ]; then
+        echo "Erro: virtualenv não encontrado em: $venv"
+        return 1
+    fi
+
+    source "$venv/bin/activate"
+    set_venv_prompt
 }
 
 function desactivate() {
-    deactivate
-    PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+    if type deactivate &>/dev/null; then
+        deactivate
+    fi
+
+    set_venv_prompt
 }
 
-PS1='$(if [ -n "$VIRTUAL_ENV" ]; then printf "\[\e[1;31m\](venv)\[\e[0m\] "; fi)\[\e[1;34m\]╭─\[\e[1;36m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[1;33m\]$(parse_git_branch)\[\e[0m\]\n\[\e[1;34m\]╰─❯ \[\e[0m\]'
+set_venv_prompt
 EOF
-
-
 
 RUN cat > /home/${USERNAME}/.bash_profile <<'EOF'
 [ -f ~/.bashrc ] && source ~/.bashrc
@@ -98,5 +119,16 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then \
 RUN git config --global user.name "Alex Ribeiro de Faria" \
     && git config --global user.email "135660435+alexribeirofaria@github.com"
 
+RUN cat > /root/.switch_user <<'SWITCHEOF'
+if [ "${AUTO_SWITCHED}" != "1" ]; then
+    export AUTO_SWITCHED=1
+    exec su - rstudio
+fi
+SWITCHEOF
+
+RUN echo 'source /root/.switch_user' >> /root/.bashrc     && \
+    echo 'source /root/.switch_user' >> /root/.bash_profile && \
+    echo '. /root/.switch_user'      >> /root/.profile
+ 
 WORKDIR /workspace
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
