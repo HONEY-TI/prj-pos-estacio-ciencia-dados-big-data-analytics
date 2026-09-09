@@ -16,7 +16,7 @@
     {
       "label": "Update Submodules",
       "type": "shell",
-      "command": "if [ -f .git/config.lock ]; then rm -f .git/config.lock; fi && git submodule sync --recursive && git submodule update --init --remote --force .ai",
+      "command": "${workspaceFolder}/.vscode/update-submodules",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
