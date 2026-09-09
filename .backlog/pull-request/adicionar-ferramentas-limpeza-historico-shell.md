@@ -5,7 +5,7 @@ title: "PR(#23)-Adicionar ferramentas para limpeza do histórico do shell"
 branch: feature/adicionar-ferramentas-limpeza-historico-shell
 base: main
 extends: feature-06-adicionar-ferramentas-limpeza-historico-shell
-status: draft
+status: merged
 ---
 
 ## 📋 Descrição
