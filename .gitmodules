@@ -50,3 +50,4 @@
 [submodule ".ai"]
 	path = .ai
 	url = git@github.com:HONEY-TI/.ai.git
+    branch = main

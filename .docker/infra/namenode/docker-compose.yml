@@ -1,0 +1,28 @@
+services:
+   namenode:
+    image: apache/hadoop:3
+    container_name: namenode
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    networks:
+      - app-network
+    volumes:
+      - namenode-data:/data
+      - ./hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ./hadoop-config/hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml:ro
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:9870/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+      
+volumes:
+  namenode-data:
+    external: true
+networks:
+  app-network:
+    external: true

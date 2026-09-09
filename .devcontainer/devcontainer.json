@@ -1,12 +1,13 @@
 {
-  "name": "rstudio-dev-base",
+  "name": "rstudio-pos-devcontainer",
   "dockerComposeFile": [
     "docker-compose.yml"
   ],
-  "service": "rstudio",
+  "service": "rstudio-pos-devcontainer",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": true,
-  "overrideCommand": false,
+  "initializeCommand": "bash .devcontainer/init-docker",
+  "postStartCommand": "sudo /usr/local/bin/setup-codex.sh",
   "workspaceFolder": "/workspace",
   "forwardPorts": [
     8787,
@@ -18,7 +19,7 @@
     9864
   ],
   "mounts": [
-    "type=volume,target=/home/node/.vscode-server",
+    "type=volume,target=/home/rstudio/.vscode-server",
     "source=${localEnv:HOME}/.ssh,target=/home/rstudio/.ssh,type=bind"
   ],
   "customizations": {

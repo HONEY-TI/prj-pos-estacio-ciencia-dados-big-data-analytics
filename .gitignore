@@ -135,6 +135,7 @@ client_secret.json
 .claude/
 .openclaude/
 .codex/
+**/AGENTS.md
 .copilot/
 .opencode/
 .blackbox/

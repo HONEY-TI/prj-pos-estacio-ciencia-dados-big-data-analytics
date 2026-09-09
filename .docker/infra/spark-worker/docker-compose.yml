@@ -1,0 +1,29 @@
+services:
+  spark-worker:
+    container_name: spark-worker
+    hostname: spark-worker
+    image: apache/spark:3.5.1
+    environment:
+      SPARK_LOCAL_HOSTNAME: spark-worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_MEMORY: 2G
+      SPARK_WORKER_CORES: 2
+    ports:
+      - "8081:8081"
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.worker.Worker
+      spark://spark-master:7077
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:8081/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s        
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true

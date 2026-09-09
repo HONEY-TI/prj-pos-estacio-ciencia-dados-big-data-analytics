@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ─────────────────────────────────────────────────────────────────────────
+# init-docker
+#
+# Roda `make up` em .docker/infra, mas apenas se estiver fora de um
+# container Docker (ou seja, direto no host).
+# ─────────────────────────────────────────────────────────────────────────
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+MAKE_INFRA_DIR="${WORKSPACE_DIR}/.docker/infra"
+
+log() {
+  printf '[init-docker] %s\n' "$1"
+}
+
+is_running_inside_container() {
+  if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+    return 0
+  fi
+
+  if [ -r /proc/1/cgroup ] && grep -qE '(docker|containerd|kubepods)' /proc/1/cgroup 2>/dev/null; then
+    return 0
+  fi
+
+  return 1
+}
+
+main() {
+  if is_running_inside_container; then
+    log "Executando dentro de um container Docker — pulando inicialização (deve rodar no host)."
+    exit 0
+  fi
+
+  if [ ! -d "$MAKE_INFRA_DIR" ]; then
+    log "Diretório não encontrado: ${MAKE_INFRA_DIR}"
+    exit 1
+  fi
+
+  if [ ! -f "$MAKE_INFRA_DIR/Makefile" ]; then
+    log "Makefile não encontrado: ${MAKE_INFRA_DIR}/Makefile"
+    exit 1
+  fi
+
+  log "Fora do container — rodando 'make infra-up' em ${MAKE_INFRA_DIR}"
+  make -C "$MAKE_INFRA_DIR" clean-devcontainer
+  make -C "$MAKE_INFRA_DIR" infra-up
+}
+
+main "$@"
