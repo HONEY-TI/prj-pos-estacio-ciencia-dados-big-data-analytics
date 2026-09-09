@@ -5,7 +5,7 @@ title: "PR(#22)-Modernizar Ambiente Docker e Dev Container"
 branch: feature/modernizar-ambiente-docker-e-dev-container
 base: main
 extends: feature-05-modernizar-ambiente-docker-e-dev-container
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
