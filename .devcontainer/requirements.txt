@@ -1,0 +1,17 @@
+jupyterlab
+notebook
+ipykernel
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+polars
+pyarrow
+jupyterlab-git
+plotly
+mrjob
+black
+flake8
+pytest
+pyspark==3.5.1

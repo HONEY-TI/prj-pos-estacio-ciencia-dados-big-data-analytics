@@ -1,0 +1,29 @@
+services:
+  datanode:
+    image: apache/hadoop:3
+    container_name: datanode
+    hostname: datanode
+    command: ["hdfs", "datanode"]
+    restart: unless-stopped
+    ports:
+      - "9864:9864"
+    networks:
+      - app-network
+    volumes:
+      - datanode-data:/data
+      - ./hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ./hadoop-config/hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml:ro
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:9864/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+networks:
+  app-network:
+    external: true
+
+volumes:
+  datanode-data:
+    external: true
