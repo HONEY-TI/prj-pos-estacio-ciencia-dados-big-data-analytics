@@ -1,0 +1,14 @@
+# 1. Remove locks (principal + todos os submódulos)
+find . -name "config.lock" -path "*/.git/*" -delete 2>/dev/null || true
+
+# 2. Sincroniza URLs
+git submodule sync --recursive
+
+# 3. Inicializa/atualiza o .ai
+git submodule update --init --remote --force .ai
+
+# 4. Garante fetch em TODOS os submódulos antes do merge remoto
+git submodule foreach --recursive 'git fetch origin || true'
+
+# 5. Agora sim, atualiza com merge da branch remota
+git submodule update --remote --merge --recursive

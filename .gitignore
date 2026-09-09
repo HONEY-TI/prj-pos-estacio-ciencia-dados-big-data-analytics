@@ -182,6 +182,9 @@ assets/*
 # =========================
 # R language
 # =========================
+**/.rproj.user
+**/.Rproj.user/*
+///.fuse*
 .Rhistory
 .RData
 .Ruserdata
