@@ -1,0 +1,13 @@
+services:
+  network-init:
+    image: alpine:3.22
+    profiles: ["init"]
+    container_name: rs-network-init
+    command: ["true"]
+    networks:
+      - rs-network
+
+networks:
+  rs-network:
+    name: rs-network
+    driver: bridge

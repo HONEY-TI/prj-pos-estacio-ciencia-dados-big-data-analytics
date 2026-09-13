@@ -1,18 +1,21 @@
 services:
   datanode:
-    image: apache/hadoop:3
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: datanode
+    image: alexfariakof/datanode
     hostname: datanode
-    command: ["hdfs", "datanode"]
+    #command: ["hdfs", "datanode"]
     restart: unless-stopped
     ports:
       - "9864:9864"
     networks:
-      - app-network
+      - rs-network
     volumes:
-      - datanode-data:/data
-      - ./hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
-      - ./hadoop-config/hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml:ro
+      - datanode-data:/data/data
+      - ../.hadoop-config/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ../.hadoop-config/hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml:ro
     healthcheck:
       test: ["CMD-SHELL","curl -fsS http://localhost:9864/ >/dev/null || exit 1"]
       interval: 10s
@@ -21,7 +24,7 @@ services:
       start_period: 20s
 
 networks:
-  app-network:
+  rs-network:
     external: true
 
 volumes:

@@ -1,10 +1,14 @@
-networks:
-  app-network:
-    name: app-network
-    external: true
+#make up
+include:
+  - path: docker-compose.network.yml
+  - path: docker-compose.volume.yml
 
-volumes:
-  namenode-data:
-    name: namenode-data
-  datanode-data:
-    name: datanode-data
+services:
+  rs-infra:
+    image: alpine:3.22
+    container_name: rs-infra
+    profiles: ["init"]
+    command: ["true"]
+    networks:
+      - rs-network
+    pull_policy: if_not_present
