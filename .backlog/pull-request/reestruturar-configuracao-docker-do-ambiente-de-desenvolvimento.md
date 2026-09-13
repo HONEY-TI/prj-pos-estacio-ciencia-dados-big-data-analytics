@@ -5,7 +5,7 @@ title: "PR(#25)-Reestruturar Configuração Docker do Ambiente de Desenvolviment
 branch: feature/reestruturar-configuracao-docker-do-ambiente-de-desenvolvimento
 base: main
 extends: feature-08-reestruturar-configuracao-docker-do-ambiente-de-desenvolvimento
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
