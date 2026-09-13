@@ -29,7 +29,7 @@ services:
     mem_limit: 2g
     cpus: 2
     networks:
-      - app-network
+      - rs-network
     logging:
       driver: json-file
       options:
@@ -37,5 +37,5 @@ services:
         max-file: "1"
 
 networks:
-  app-network:
+  rs-network:
     external: true

@@ -1,0 +1,17 @@
+#docker compose -f ./docker-compose.volume.yml --profile init up volumes-init --no-start
+
+services:
+  volumes-init:
+    image: alpine:3.22
+    profiles: ["init"]
+    container_name: rs-dev-volumes-init
+    command: ["true"]
+    volumes:
+      - datanode-data:/data/data
+      - namenode-data:/data/name
+
+volumes:
+  datanode-data:
+    name: datanode-data
+  namenode-data:
+    name: namenode-data

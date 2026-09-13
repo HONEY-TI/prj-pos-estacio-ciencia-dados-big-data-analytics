@@ -22,8 +22,8 @@ services:
       retries: 12
       start_period: 20s        
     networks:
-      - app-network
+      - rs-network
 
 networks:
-  app-network:
+  rs-network:
     external: true

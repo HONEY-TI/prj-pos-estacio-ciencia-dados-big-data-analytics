@@ -11,7 +11,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-MAKE_INFRA_DIR="${WORKSPACE_DIR}/.docker/infra"
+MAKE_INFRA_DIR="${WORKSPACE_DIR}/.docker"
 
 log() {
   printf '[init-docker] %s\n' "$1"
@@ -45,9 +45,8 @@ main() {
     exit 1
   fi
 
-  log "Fora do container — rodando 'make infra-up' em ${MAKE_INFRA_DIR}"
-  make -C "$MAKE_INFRA_DIR" clean-devcontainer
-  make -C "$MAKE_INFRA_DIR" infra-up
+  log "Fora do container — rodando 'make up' em ${MAKE_INFRA_DIR}"
+  make -C "$MAKE_INFRA_DIR" up
 }
 
 main "$@"

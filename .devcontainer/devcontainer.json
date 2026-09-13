@@ -19,7 +19,6 @@
     9864
   ],
   "mounts": [
-    "type=volume,target=/home/rstudio/.vscode-server",
     "source=${localEnv:HOME}/.ssh,target=/home/rstudio/.ssh,type=bind"
   ],
   "customizations": {
