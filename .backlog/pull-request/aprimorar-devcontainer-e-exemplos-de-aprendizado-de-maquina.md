@@ -22,9 +22,9 @@ Feature relacionada: `.backlog/features/feature-09-aprimorar-devcontainer-e-exem
 | --- | ---: |
 | 🌿 Branch de origem | `feature/aprimorar-devcontainer-e-exemplos-de-aprendizado-de-maquina` |
 | 🎯 Branch de destino | `main` |
-| 📝 Total de commits | 5 de conteúdo |
+| 📝 Total de commits | 8 |
 | 📁 Arquivos alterados | 10 |
-| ➕ Linhas adicionadas | 609 |
+| ➕ Linhas adicionadas | 694 |
 | ➖ Linhas removidas | 328 |
 
 ---
@@ -36,7 +36,7 @@ Feature relacionada: `.backlog/features/feature-09-aprimorar-devcontainer-e-exem
   - Commits: 2 publicados
   - Arquivos alterados: 1 ponteiro de submódulo
 - **repositório pai** — branch `feature/aprimorar-devcontainer-e-exemplos-de-aprendizado-de-maquina`
-  - Commits: 5 de conteúdo
+  - Commits: 7 (excluindo o commit inicial da feature)
   - Arquivos alterados: 10 — Devcontainer, Docker, VS Code, notebooks e documentação do backlog
 
 ---
@@ -53,6 +53,10 @@ Feature relacionada: `.backlog/features/feature-09-aprimorar-devcontainer-e-exem
 
 ## 📝 feature Commits
 
+- **fix(docker): corrigir expansão do branch no prompt Zsh**
+  > _17/09/2026 18:18_
+- **docs(backlog): registrar PR do devcontainer**
+  > _17/09/2026 18:13_
 - **feat(exemplos): atualizar notebooks de aprendizado de máquina**
   > _17/09/2026 18:12_
 - **fix(ci): corrigir atualização de submódulos no VS Code**
