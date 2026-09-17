@@ -9,9 +9,13 @@ services:
     volumes:
       - datanode-data:/data/data
       - namenode-data:/data/name
+      - shell_history:/data/shell_history
+
 
 volumes:
   datanode-data:
     name: datanode-data
   namenode-data:
     name: namenode-data
+  shell_history:
+   name: shell_history

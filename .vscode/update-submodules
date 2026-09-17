@@ -6,9 +6,7 @@ git submodule sync --recursive
 
 # 3. Inicializa/atualiza o .ai
 git submodule update --init --remote --force .ai
+git submodule update --remote --merge --recursive .ai
 
 # 4. Garante fetch em TODOS os submódulos antes do merge remoto
 git submodule foreach --recursive 'git fetch origin || true'
-
-# 5. Agora sim, atualiza com merge da branch remota
-git submodule update --remote --merge --recursive
