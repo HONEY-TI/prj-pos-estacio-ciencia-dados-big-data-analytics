@@ -5,7 +5,7 @@ title: "PR(#26)-Aprimorar Devcontainer e Exemplos de Aprendizado de Máquina"
 branch: feature/aprimorar-devcontainer-e-exemplos-de-aprendizado-de-maquina
 base: main
 extends: feature-09-aprimorar-devcontainer-e-exemplos-de-aprendizado-de-maquina
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
