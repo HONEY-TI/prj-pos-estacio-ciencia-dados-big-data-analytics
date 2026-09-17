@@ -67,8 +67,9 @@ function parse_git_branch() {
 
     [[ -n "$branch" ]] && printf " (%s)" "$branch"
 }
+setopt PROMPT_SUBST
 
-PROMPT=$'\e[1;34m┌── \e[0m(\e[1;31m%n\e[0m㉿\e[1;36m%m\e[0m)-\e[1;34m[\e[1;32m%~\e[0m\e[1;33m$(parse_git_branch)\e[0m\e[1;34m]\e[0m\n\e[1;34m└─\e[0m%# '
+PROMPT=$'\e[1;34m┌── \e[0m(\e[1;31m%n\e[0m㉿\e[1;36m%m\e[0m)-\e[1;34m[\e[1;32m%~\e[1;33m$(parse_git_branch)\e[0m\e[1;34m]\e[0m\n\e[1;34m└─\e[0m%# '
 EOF
 
 RUN chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.zshrc
