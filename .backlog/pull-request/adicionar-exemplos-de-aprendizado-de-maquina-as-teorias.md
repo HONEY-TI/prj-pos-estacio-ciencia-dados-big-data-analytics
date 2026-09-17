@@ -5,7 +5,7 @@ title: "PR(#27)-Adicionar Exemplos de Aprendizado de Máquina às Teorias Analí
 branch: feature/adicionar-exemplos-de-aprendizado-de-maquina-as-teorias
 base: main
 extends: feature-10-adicionar-exemplos-de-aprendizado-de-maquina-as-teorias
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
