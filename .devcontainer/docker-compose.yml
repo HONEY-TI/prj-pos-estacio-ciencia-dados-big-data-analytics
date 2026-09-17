@@ -16,6 +16,8 @@ services:
     volumes:
       - ..:/workspace:cached      
       - ../src:/home/rstudio/src/r:cached
+      - vscode-extensions:/$HOME/.vscode-server/extensions
+      - shell_history:/home/$HOME/shell_history            
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -33,6 +35,10 @@ services:
         max-size: "10m"
         max-file: "1"
 
+volumes:
+  vscode-extensions:
+  shell_history:
+    external: true
 networks:
   rs-network:
     external: true
