@@ -5,9 +5,9 @@
   ],
   "service": "rstudio-pos-devcontainer",
   "remoteUser": "rstudio",
-  "updateRemoteUserUID": true,
+  "updateRemoteUserUID": false,
   //"initializeCommand": "bash .devcontainer/init-docker",
-  "postStartCommand": "sudo /usr/local/bin/setup-codex.sh",
+  "postStartCommand": "sudo /usr/local/bin/setup-codex.sh && codex",
   "workspaceFolder": "/workspace",
   "forwardPorts": [
     8787,
