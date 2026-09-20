@@ -16,9 +16,9 @@ Organiza e amplia o material da disciplina Sem2 — Ciclo de Vida e Linguagem R,
 
 | Métrica | Valor |
 | --- | ---: |
-| Commits de conteúdo | 2 |
+| Commits de conteúdo | 3 |
 | Arquivos alterados no pai | 3 |
-| Linhas adicionadas | 33 |
+| Linhas adicionadas | 69 |
 | Linhas removidas | 1 |
 
 ## 📦 Repositórios/branches atualizados
@@ -45,3 +45,5 @@ Organiza e amplia o material da disciplina Sem2 — Ciclo de Vida e Linguagem R,
   > _20/09/2026 11:29_
 - **`chore(deps): atualizar submódulo da disciplina Sem2`**
   > _20/09/2026 11:36_
+- **`docs(backlog): atualizar status e métricas da PR Sem2`**
+  > _20/09/2026 11:37_
