@@ -22,9 +22,9 @@ Feature relacionada: `.backlog/features/feature-11-refresh-dev-container-configu
 | --- | --- |
 | 🌿 Branch de origem | `feature/refresh-dev-container-configuration-and-add-semester-2-study-notes` |
 | 🎯 Branch de destino | `main` |
-| 📝 Total de commits | 4 |
+| 📝 Total de commits | 5 |
 | 📁 Arquivos alterados | 7 |
-| 📈 Alteração | 7 files changed, 84 insertions(+), 4 deletions(-) |
+| 📈 Alteração | 7 files changed, 86 insertions(+), 4 deletions(-) |
 
 ## 📦 Repositórios/branches atualizados
 
@@ -56,3 +56,5 @@ Feature relacionada: `.backlog/features/feature-11-refresh-dev-container-configu
   > _20/09/2026 03:35_
 - **docs(backlog): documentar feature e pull request**
   > _20/09/2026 03:35_
+- **docs(backlog): corrigir estatísticas da PR**
+  > _20/09/2026 03:36_
