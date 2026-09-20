@@ -5,7 +5,7 @@ title: "PR(#29)-Refresh Dev Container Configuration and Add Semester 2 Study Not
 branch: feature/refresh-dev-container-configuration-and-add-semester-2-study-notes
 base: main
 extends: feature-11-refresh-dev-container-configuration-and-add-semester-2-study-notes
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
