@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: rstudio-pos-devcontainer
     container_name: rstudio-pos-devcontainer  # docker exec -it rstudio-devcontaier bash
     environment:
       PASSWORD: "toor"
@@ -37,6 +38,7 @@ services:
 
 volumes:
   vscode-extensions:
+    name: vscode-extensions-rstudio
   shell_history:
     external: true
 networks:
