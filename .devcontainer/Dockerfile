@@ -55,6 +55,7 @@ export PATH="${VIRTUAL_ENV}/bin:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${HOME}/.np
 # =========================================================
 
 alias cls='clear'
+alias py='python3'
 alias ll='eza -l -h --group --group-directories-first'
 alias la='eza -la -hs --group --group-directories-first'
 alias lt='eza --tree --level=2 --group --group-directories-first'
