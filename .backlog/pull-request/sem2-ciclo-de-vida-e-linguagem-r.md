@@ -25,7 +25,7 @@ Também inclui ajustes no ambiente do monorepositório e a atualização do subm
 
 | Repositório | Branch | PR | Estado |
 | --- | --- | --- | --- |
-| Repositório pai | `feature/sem2-ciclo-de-vida-e-linguagem-r` | [#31](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/31) | Draft |
+| Repositório pai | `feature/sem2-ciclo-de-vida-e-linguagem-r` | [#31](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/31) | Aberta |
 | Submódulo Sem2 | `main` | [#3](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/3) | Mesclada por squash |
 
 ## Estatísticas do submódulo
@@ -36,6 +36,15 @@ Também inclui ajustes no ambiente do monorepositório e a atualização do subm
 | Arquivos alterados | 9 |
 | Linhas adicionadas | 375 |
 | Linhas removidas | 0 |
+
+## Estatísticas da PR principal
+
+| Métrica | Valor |
+| --- | ---: |
+| Commits | 2 |
+| Arquivos alterados | 6 |
+| Linhas adicionadas | 180 |
+| Linhas removidas | 47 |
 
 ## Checklist
 
@@ -52,3 +61,7 @@ Também inclui ajustes no ambiente do monorepositório e a atualização do subm
 - `feat(amostragem): adicionar conteúdo do tema 2`
   - Adiciona os textos e os recursos visuais do Tema 2.
   - Referências: `#31` e `#3`.
+
+- `feat(integracao): integrar conteúdo da disciplina Sem2`
+  - Atualiza o gitlink do submódulo, o ambiente e esta documentação.
+  - Referência: `#31`.
