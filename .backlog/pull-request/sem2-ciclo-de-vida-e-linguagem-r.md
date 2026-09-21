@@ -5,7 +5,7 @@ title: "PR(#31)-sem2-ciclo-de-vida-e-linguagem-r"
 branch: feature/sem2-ciclo-de-vida-e-linguagem-r
 base: main
 extends: feature-12-sem2-ciclo-de-vida-e-linguagem-r
-status: open
+status: merged
 ---
 
 ## Descrição
@@ -25,7 +25,7 @@ Também inclui ajustes no ambiente do monorepositório e a atualização do subm
 
 | Repositório | Branch | PR | Estado |
 | --- | --- | --- | --- |
-| Repositório pai | `feature/sem2-ciclo-de-vida-e-linguagem-r` | [#31](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/31) | Aberta |
+| Repositório pai | `main` | [#31](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/31) | Mesclada por squash |
 | Submódulo Sem2 | `main` | [#3](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/3) | Mesclada por squash |
 
 ## Estatísticas do submódulo
