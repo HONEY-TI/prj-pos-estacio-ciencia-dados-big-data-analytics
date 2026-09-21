@@ -4,7 +4,7 @@
     {
       "label": "Update Submodules",
       "type": "shell",
-      "command": "${workspaceFolder}/.vscode/update-submodules",
+      //"command": "${workspaceFolder}/.vscode/update-submodules",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
@@ -18,7 +18,7 @@
     {
       "label": "Init Docker",
       "type": "shell",
-      "command": "${workspaceFolder}/.vscode/init-docker",
+      //"command": "${workspaceFolder}/.vscode/init-docker",
       "runOptions": {
         "runOn": "folderOpen"
       },
