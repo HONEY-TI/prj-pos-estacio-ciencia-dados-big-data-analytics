@@ -18,7 +18,7 @@ services:
       - ..:/workspace:cached      
       - ../src:/home/rstudio/src/r:cached
       - vscode-extensions:/$HOME/.vscode-server/extensions
-      - shell_history:/home/$HOME/shell_history            
+      - shell_history:/home/$HOME/.zsh_history            
     cap_add:
       - NET_ADMIN
       - NET_RAW
