@@ -1,12 +1,135 @@
-# 1. Remove locks (principal + todos os submódulos)
-find . -name "config.lock" -path "*/.git/*" -delete 2>/dev/null || true
+#!/usr/bin/env bash
 
+set -u
+
+echo "==> Atualizando submódulos..."
+
+# ------------------------------------------------------------
+# 0. Corrige o submódulo .ai quando estiver inconsistente
+# ------------------------------------------------------------
+
+echo "==> Verificando .ai..."
+
+if [ -f ".gitmodules" ] && git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | grep -qE '[[:space:]]\.ai$'; then
+    echo "    .ai encontrado no .gitmodules"
+
+    # Se .ai está registrado no índice, remove apenas o gitlink.
+    if git ls-files --error-unmatch .ai >/dev/null 2>&1; then
+        echo "    Removendo registro antigo de .ai do índice..."
+        git rm -r --cached .ai 2>/dev/null || true
+    else
+        echo "    .ai não está registrado no índice; nada para remover."
+    fi
+
+    # Remove a cópia física para evitar conflito no submodule add.
+    if [ -e ".ai" ]; then
+        echo "    Removendo diretório .ai antigo..."
+        rm -rf .ai
+    fi
+
+    # Remove configuração antiga do submódulo do .git/config.
+    git config --remove-section submodule..ai 2>/dev/null || true
+
+    # Obtém URL e branch diretamente do .gitmodules.
+    AI_URL=$(git config -f .gitmodules --get submodule..ai.url || true)
+    AI_BRANCH=$(git config -f .gitmodules --get submodule..ai.branch || true)
+
+    # Valores padrão.
+    AI_URL="${AI_URL:-git@github.com:HONEY-TI/.ai.git}"
+    AI_BRANCH="${AI_BRANCH:-main}"
+
+    echo "    URL:    $AI_URL"
+    echo "    Branch: $AI_BRANCH"
+
+    # Registra novamente o submódulo.
+    git submodule add -b "$AI_BRANCH" "$AI_URL" .ai
+else
+    echo "    .ai não está configurado no .gitmodules."
+fi
+
+
+# ------------------------------------------------------------
+# 1. Remove locks
+# ------------------------------------------------------------
+
+echo "==> Removendo arquivos config.lock..."
+
+find . \
+    -name "config.lock" \
+    -path "*/.git/*" \
+    -delete 2>/dev/null || true
+
+
+# ------------------------------------------------------------
 # 2. Sincroniza URLs
+# ------------------------------------------------------------
+
+echo "==> Sincronizando URLs dos submódulos..."
+
 git submodule sync --recursive
 
-# 3. Inicializa/atualiza o .ai
-git submodule update --init --remote --force .ai
-git submodule update --remote --merge --recursive .ai
 
-# 4. Garante fetch em TODOS os submódulos antes do merge remoto
-git submodule foreach --recursive 'git fetch origin || true'
+# ------------------------------------------------------------
+# 3. Inicializa todos os submódulos
+# ------------------------------------------------------------
+
+echo "==> Inicializando submódulos..."
+
+git submodule update --init --recursive
+
+
+# ------------------------------------------------------------
+# 4. Fetch em TODOS os submódulos
+# ------------------------------------------------------------
+
+echo "==> Executando fetch em todos os submódulos..."
+
+git submodule foreach --recursive '
+    echo "---- $name ----"
+    git fetch origin || true
+'
+
+
+# ------------------------------------------------------------
+# 5. Atualiza .ai a partir do branch remoto
+# ------------------------------------------------------------
+
+if git ls-files --error-unmatch .ai >/dev/null 2>&1; then
+    echo "==> Atualizando .ai..."
+
+    git submodule update --init --remote --force .ai
+
+    git submodule update --remote --merge --recursive .ai
+else
+    echo "ERRO: .ai ainda não está registrado como submódulo."
+    echo "Execute:"
+    echo "    git add .gitmodules .ai"
+    echo "    git commit -m \"Fix .ai submodule\""
+    exit 1
+fi
+
+
+# ------------------------------------------------------------
+# 6. Atualiza os demais submódulos
+# ------------------------------------------------------------
+
+echo "==> Atualizando demais submódulos..."
+
+git submodule update --remote --merge --recursive
+
+
+# ------------------------------------------------------------
+# 7. Status final
+# ------------------------------------------------------------
+
+echo
+echo "=========================================="
+echo "Submódulos atualizados."
+echo "=========================================="
+echo
+
+git submodule status --recursive
+
+echo
+echo "Git status:"
+git status --short
