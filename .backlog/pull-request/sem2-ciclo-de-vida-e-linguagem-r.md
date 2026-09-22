@@ -10,41 +10,39 @@ status: open
 
 ## 📋 Descrição
 
-Implementação de **sem2-ciclo-de-vida-e-linguagem-r** pela feature branch
-`feature/sem2-ciclo-de-vida-e-linguagem-r-2`, integrando os materiais do Tema 2
-no submódulo da disciplina.
+Integração dos ajustes de Markdown e dos vídeos dos Temas 1, 2 e 3 da disciplina
+`sem2-ciclo-de-vida-e-linguagem-r`.
 
-## 📦 Repositórios e branches
+## 📦 Repositórios/branches atualizados
 
 - **Submódulo `sem2-ciclo-de-vida-e-linguagem-r`** — branch `main`
-  - PR externa: [#4](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/4)
-  - Estado: mesclada por squash
-  - Commit: `0bdd950cd6b37f41e2d2c3328f0abb2b246c4c5e`
-  - Arquivos alterados: 9
+  - PR relacionada: [#4](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/4)
+  - Estado: mesclada anteriormente por squash
+  - Commits desta atualização: 7
+  - Arquivos alterados: 7
+  - Título dos commits: `PR(#4)-sem2-ciclo-de-vida-e-linguagem-r`
 - **Repositório pai** — branch `feature/sem2-ciclo-de-vida-e-linguagem-r-2`
-  - Gitlink atualizado após a publicação do submódulo.
+  - Gitlink atualizado para `f5588f7`.
 
 ## 📊 Estatísticas
 
 | Métrica | Valor |
 | --- | ---: |
-| Commits no repositório pai | 2 |
+| Commits no repositório pai | 4 |
 | Arquivos alterados no repositório pai | 2 |
-| Arquivos alterados no submódulo | 9 |
+| Arquivos alterados no submódulo | 7 |
 
 ## ✅ Checklist
 
-- [x] PR externa criada e mesclada por squash.
-- [x] Gitlink atualizado no repositório pai.
-- [x] Conteúdo e imagens revisados por diff.
+- [x] Ajustes de Markdown revisados.
+- [x] Vídeos incorporados com fallback direto.
+- [x] Submódulo publicado e gitlink atualizado.
 - [ ] Revisão funcional.
 - [ ] Validação em ambiente Linux/jail.
 
-## Commits de conteúdo
+## Commits
 
-- **feat(amostragem): atualizar conteúdo do tema 2**
-  > _22/09/2026_
-- **feat(integracao): integrar conteúdo da disciplina Sem2**
-  > _22/09/2026_
+- **PR(#4)-sem2-ciclo-de-vida-e-linguagem-r** — 7 commits no submódulo.
+- **PR(#4)-sem2-ciclo-de-vida-e-linguagem-r** — atualização do gitlink no pai.
 
-Refs: #32; PR externa: #4.
+Referências: PR pai #32 e PR relacionada #4.
