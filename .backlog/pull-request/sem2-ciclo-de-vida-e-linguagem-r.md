@@ -5,7 +5,7 @@ title: "PR(#32)-sem2-ciclo-de-vida-e-linguagem-r"
 branch: feature/sem2-ciclo-de-vida-e-linguagem-r-2
 base: main
 extends: feature-12-sem2-ciclo-de-vida-e-linguagem-r
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
