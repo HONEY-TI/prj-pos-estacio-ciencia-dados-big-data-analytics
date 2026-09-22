@@ -1,67 +1,50 @@
 ---
 name: sem2-ciclo-de-vida-e-linguagem-r
-pr: 31
-title: "PR(#31)-sem2-ciclo-de-vida-e-linguagem-r"
-branch: feature/sem2-ciclo-de-vida-e-linguagem-r
+pr: 32
+title: "PR(#32)-sem2-ciclo-de-vida-e-linguagem-r"
+branch: feature/sem2-ciclo-de-vida-e-linguagem-r-2
 base: main
 extends: feature-12-sem2-ciclo-de-vida-e-linguagem-r
-status: merged
+status: open
 ---
 
-## Descrição
+## 📋 Descrição
 
-Atualiza o material da disciplina **Sem2 — Ciclo de Vida e Linguagem R**, com conteúdo introdutório sobre amostras aleatórias, estatísticas amostrais e estimadores.
+Implementação de **sem2-ciclo-de-vida-e-linguagem-r** pela feature branch
+`feature/sem2-ciclo-de-vida-e-linguagem-r-2`, integrando os materiais do Tema 2
+no submódulo da disciplina.
 
-Também inclui ajustes no ambiente do monorepositório e a atualização do submódulo da disciplina.
+## 📦 Repositórios e branches
 
-## Escopo
+- **Submódulo `sem2-ciclo-de-vida-e-linguagem-r`** — branch `main`
+  - PR externa: [#4](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/4)
+  - Estado: mesclada por squash
+  - Commit: `0bdd950cd6b37f41e2d2c3328f0abb2b246c4c5e`
+  - Arquivos alterados: 9
+- **Repositório pai** — branch `feature/sem2-ciclo-de-vida-e-linguagem-r-2`
+  - Gitlink atualizado após a publicação do submódulo.
 
-- Adicionar os textos dos módulos 1 e 2 do Tema 2.
-- Adicionar as imagens utilizadas nos materiais didáticos.
-- Atualizar a configuração do ambiente e dos submódulos.
-- Integrar a alteração do submódulo por meio da PR externa #3.
-
-## Repositórios e PRs
-
-| Repositório | Branch | PR | Estado |
-| --- | --- | --- | --- |
-| Repositório pai | `main` | [#31](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/31) | Mesclada por squash |
-| Submódulo Sem2 | `main` | [#3](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/3) | Mesclada por squash |
-
-## Estatísticas do submódulo
+## 📊 Estatísticas
 
 | Métrica | Valor |
 | --- | ---: |
-| Commits de conteúdo | 1 |
-| Arquivos alterados | 9 |
-| Linhas adicionadas | 375 |
-| Linhas removidas | 0 |
+| Commits no repositório pai | 2 |
+| Arquivos alterados no repositório pai | 2 |
+| Arquivos alterados no submódulo | 9 |
 
-## Estatísticas da PR principal
+## ✅ Checklist
 
-| Métrica | Valor |
-| --- | ---: |
-| Commits | 2 |
-| Arquivos alterados | 6 |
-| Linhas adicionadas | 180 |
-| Linhas removidas | 47 |
-
-## Checklist
-
-- [x] Conteúdo organizado em módulos.
-- [x] Imagens PNG verificadas.
-- [x] PR externa criada.
-- [x] PR externa mesclada por squash.
-- [x] Ponteiro do submódulo atualizado no repositório pai.
+- [x] PR externa criada e mesclada por squash.
+- [x] Gitlink atualizado no repositório pai.
+- [x] Conteúdo e imagens revisados por diff.
 - [ ] Revisão funcional.
 - [ ] Validação em ambiente Linux/jail.
 
 ## Commits de conteúdo
 
-- `feat(amostragem): adicionar conteúdo do tema 2`
-  - Adiciona os textos e os recursos visuais do Tema 2.
-  - Referências: `#31` e `#3`.
+- **feat(amostragem): atualizar conteúdo do tema 2**
+  > _22/09/2026_
+- **feat(integracao): integrar conteúdo da disciplina Sem2**
+  > _22/09/2026_
 
-- `feat(integracao): integrar conteúdo da disciplina Sem2`
-  - Atualiza o gitlink do submódulo, o ambiente e esta documentação.
-  - Referência: `#31`.
+Refs: #32; PR externa: #4.
