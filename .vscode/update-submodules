@@ -8,45 +8,53 @@ echo "==> Atualizando submódulos..."
 # 0. Corrige o submódulo .ai quando estiver inconsistente
 # ------------------------------------------------------------
 
-echo "==> Verificando .ai..."
+echo "==> Verificando submódulo .ai..."
+# Diretório onde este script está localizado (.vscode)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ -f ".gitmodules" ] && git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | grep -qE '[[:space:]]\.ai$'; then
+# Diretório raiz do projeto 
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)" 
+
+# Caminho absoluto do submódulo .ai 
+AI_PATH="${PROJECT_DIR}/.ai"
+
+if [ -f ".gitmodules" ] && git config -f .gitmodules --get "submodule.${AI_PATH}.path" >/dev/null 2>&1; then
     echo "    .ai encontrado no .gitmodules"
 
-    # Se .ai está registrado no índice, remove apenas o gitlink.
-    if git ls-files --error-unmatch .ai >/dev/null 2>&1; then
-        echo "    Removendo registro antigo de .ai do índice..."
-        git rm -r --cached .ai 2>/dev/null || true
-    else
-        echo "    .ai não está registrado no índice; nada para remover."
-    fi
+    # URL e branch definidos no .gitmodules
+    AI_URL=$(git config -f .gitmodules --get "submodule.${AI_PATH}.url" || true)
+    AI_BRANCH=$(git config -f .gitmodules --get "submodule.${AI_PATH}.branch" || true)
 
-    # Remove a cópia física para evitar conflito no submodule add.
-    if [ -e ".ai" ]; then
-        echo "    Removendo diretório .ai antigo..."
-        rm -rf .ai
-    fi
-
-    # Remove configuração antiga do submódulo do .git/config.
-    git config --remove-section submodule..ai 2>/dev/null || true
-
-    # Obtém URL e branch diretamente do .gitmodules.
-    AI_URL=$(git config -f .gitmodules --get submodule..ai.url || true)
-    AI_BRANCH=$(git config -f .gitmodules --get submodule..ai.branch || true)
-
-    # Valores padrão.
+    # Valores padrão
     AI_URL="${AI_URL:-git@github.com:HONEY-TI/.ai.git}"
     AI_BRANCH="${AI_BRANCH:-main}"
 
+    echo "    Path:   $AI_PATH"
     echo "    URL:    $AI_URL"
     echo "    Branch: $AI_BRANCH"
 
-    # Registra novamente o submódulo.
-    git submodule add -b "$AI_BRANCH" "$AI_URL" .ai
+    # Remove o submódulo antigo do índice
+    if git ls-files --error-unmatch "$AI_PATH" >/dev/null 2>&1; then
+        echo "    Removendo registro antigo de .ai do índice..."
+        git rm -r --cached "$AI_PATH" 2>/dev/null || true
+    fi
+
+    # Remove configuração antiga do .git/config
+    git config --remove-section "submodule.${AI_PATH}" 2>/dev/null || true
+
+    # Remove diretório físico
+    if [ -e "$AI_PATH" ]; then
+        echo "    Removendo diretório .ai antigo..."
+        rm -rf "$AI_PATH"
+    fi
+
+    # Recria o submódulo SEMPRE na raiz
+    echo "    Recriando submódulo .ai..."
+    git submodule add -b "$AI_BRANCH" "$AI_URL" "$AI_PATH"
+
 else
     echo "    .ai não está configurado no .gitmodules."
 fi
-
 
 # ------------------------------------------------------------
 # 1. Remove locks

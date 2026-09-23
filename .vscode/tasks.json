@@ -4,7 +4,7 @@
     {
       "label": "Update Submodules",
       "type": "shell",
-      //"command": "${workspaceFolder}/.vscode/update-submodules",
+      "command": "${workspaceFolder}/.vscode/update-submodules",
       "problemMatcher": [],
       "runOptions": {
         "runOn": "folderOpen"
