@@ -51,7 +51,3 @@
 	path = .ai
 	url = git@github.com:HONEY-TI/.ai.git
     branch = main
-[submodule ".vscode/.ai"]
-	path = .vscode/.ai
-	url = git@github.com:HONEY-TI/.ai.git
-	branch = main
