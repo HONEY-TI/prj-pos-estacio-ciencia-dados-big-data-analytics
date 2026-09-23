@@ -5,7 +5,7 @@ title: "PR(#36)-Preservar Conteúdos Multimídia dos Módulos com Git LFS"
 branch: feature/preservar-conteudos-multimidia-git-lfs
 base: main
 extends: feature-15-preservar-conteudos-multimidia-git-lfs
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
