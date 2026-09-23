@@ -17,6 +17,7 @@ services:
     volumes:
       - ..:/workspace:cached      
       - ../src:/home/rstudio/src/r:cached
+      - ../projects/sem2-ciclo-de-vida-e-linguagem-r/TEMA 3/workspace:/home/rstudio/workspace:cached      
       - vscode-extensions:/$HOME/.vscode-server/extensions
       - shell_history:/home/$HOME/.zsh_history            
     cap_add:
