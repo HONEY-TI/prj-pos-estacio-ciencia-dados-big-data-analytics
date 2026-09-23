@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "sem2-desenvolvimento-pessoal-carreira-empregabilidade"
+		}
+	],
+	"settings": {
+		"python-envs.defaultEnvManager": "ms-python.python:system",
+		"r.interpreterPath": "http://localhost:8787/",
+		"r.lsp.debug": false,
+		"r.sessionWatcher": false,
+		"r.bracketedPaste": true,
+		"r.lsp.promptToInstall": false
+	}
+}
