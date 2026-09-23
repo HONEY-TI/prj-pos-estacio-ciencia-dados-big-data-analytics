@@ -42,6 +42,23 @@ Feature relacionada: `.backlog/features/feature-13-sem2-tema-3-amostragem-e-esti
 - **chore(deps): atualizar submodule sem2 ciclo de vida e linguagem r para main**
 - **chore(deps): atualizar submodule ai para main**
 
+## 🔗 Histórico herdado da PR #33
+
+### Commits PR(#33)-sem2-tema-3-amostragem-e-estimacao-no-r
+
+- `fa32949` — chore: iniciar feature feature/sem2-tema-3-amostragem-e-estimacao-no-r
+- `6f23149` — chore(docker): montar workspace do tema 3
+- `5c16f3f` — docs(backlog): registrar feature do tema 3
+- `8f4a0de` — docs(backlog): registrar PR do tema 3
+- `cc7ebfc` — docs(backlog): atualizar status da PR 33
+- `86a6032` — chore(deps): atualizar submodule ai
+- `c9e49fd` — chore(deps): atualizar submodule sem2 ciclo de vida e linguagem r
+- `da98195` — chore(docker): dockerfile
+- `d62595c` — docs(backlog): atualizar status da PR 33
+- `bead654` — docs(backlog): registrar merge da PR 33
+
+PRs relacionadas: [#33](https://github.com/HONEY-TI/prj-pos-estacio-ciencia-dados-big-data-analytics/pull/33), [`.ai` #7](https://github.com/HONEY-TI/.ai/pull/7) e [`sem2-ciclo-de-vida-e-linguagem-r` #5](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/5).
+
 ## Checklist
 
 - [x] PR anterior #33 referenciada
