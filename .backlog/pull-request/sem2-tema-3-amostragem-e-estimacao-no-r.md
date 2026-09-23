@@ -11,8 +11,7 @@ status: draft
 ## 📋 Descrição
 
 Implementação do **sem2-tema-3-amostragem-e-estimacao-no-r** via feature branch
-`feature/sem2-tema-3-amostragem-e-estimacao-no-r`, com documentação da feature e
-integração do conteúdo do Tema 3 no submódulo da disciplina.
+`feature/sem2-tema-3-amostragem-e-estimacao-no-r`, mantida aberta em modo draft.
 
 A PR externa do submódulo está publicada e pronta para integração antes da
 atualização do gitlink no repositório pai.
@@ -25,8 +24,10 @@ Feature relacionada: `.backlog/features/feature-13-sem2-tema-3-amostragem-e-esti
 | --- | ---: |
 | Branch de origem | `feature/sem2-tema-3-amostragem-e-estimacao-no-r` |
 | Branch de destino | `main` |
-| Commits de conteúdo no pai | 0 |
-| Arquivos alterados no pai | 0 |
+| Commits de conteúdo no pai | 3 |
+| Arquivos alterados no pai | 3 |
+| Linhas adicionadas | 75 |
+| Linhas removidas | 0 |
 
 O commit inicial vazio existe apenas para manter a PR aberta antes dos commits de conteúdo.
 
@@ -35,11 +36,20 @@ O commit inicial vazio existe apenas para manter a PR aberta antes dos commits d
 - **Submódulo `projects/sem2-ciclo-de-vida-e-linguagem-r`** — branch
   `feature/sem2-tema-3-amostragem-e-estimacao-no-r`
   - PR externa: [#5](https://github.com/HONEY-TI/sem2-ciclo-de-vida-e-linguagem-r/pull/5)
-  - Estado: aberta, draft? não, pronta e mergeable; integração por squash pendente.
+  - Estado: aberta, pronta e mergeable; integração por squash pendente.
   - Commits: 3
   - Arquivos alterados: 22
 - **Repositório pai** — branch `feature/sem2-tema-3-amostragem-e-estimacao-no-r`
   - O gitlink será atualizado após a integração da PR externa #5.
+
+## Commits atuais do pai
+
+- **docs(backlog): registrar PR do tema 3**
+  > _23/09/2026 00:12_
+- **docs(backlog): registrar feature do tema 3**
+  > _23/09/2026 00:12_
+- **chore(docker): montar workspace do tema 3**
+  > _23/09/2026 00:12_
 
 ## Checklist
 
