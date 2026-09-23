@@ -5,7 +5,7 @@ title: "PR(#33)-sem2-tema-3-amostragem-e-estimacao-no-r"
 branch: feature/sem2-tema-3-amostragem-e-estimacao-no-r
 base: main
 extends: feature-13-sem2-tema-3-amostragem-e-estimacao-no-r
-status: open
+status: merged
 ---
 
 ## 📋 Descrição
