@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN R -q -e "install.packages(c('sampling', 'survey'), repos='https://cloud.r-project.org', dependencies=TRUE)"
+
 ARG USERNAME=rstudio
 
 COPY requirements.txt /tmp/requirements.txt
