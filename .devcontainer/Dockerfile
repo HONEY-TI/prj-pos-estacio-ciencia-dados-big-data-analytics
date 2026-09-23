@@ -4,8 +4,11 @@ USER root
 RUN apt-get update && apt-get install -y \
     openssh-client \
     zsh \
+    git-lfs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN git lfs install --system
 
 RUN R -q -e "install.packages(c('sampling', 'survey'), repos='https://cloud.r-project.org', dependencies=TRUE)"
 

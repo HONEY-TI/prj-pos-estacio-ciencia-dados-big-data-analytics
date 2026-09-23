@@ -157,8 +157,6 @@ monoRepo/
 *.mp3
 *.wav
 *.mkv
-*.mp4
-**/*.mp4
 # =========================
 # Angular specific extras
 # =========================
