@@ -154,7 +154,7 @@ monoRepo/
 # =========================
 # Media files (optional rule - keep only if desired)
 # =========================
-*.mp3
+!*.mp3
 *.wav
 *.mkv
 # =========================
