@@ -146,3 +146,7 @@ O hook `post-checkout` ajuda a inicializar e atualizar os submódulos após a tr
 ## Objetivo
 
 Manter uma trilha organizada e reproduzível de teoria, prática e projetos em Ciência de Dados, Big Data Analytics, Business Intelligence e Inteligência Artificial.
+
+## ⚖️ Licença
+
+Consulte o arquivo de [`Licença`](LICENSE). Antes de publicar ou redistribuir, revise os termos aplicaveis e garanta que eles estejam consistentes com a intencao juridica do projeto.
