@@ -52,3 +52,6 @@
 	path = .ai
 	url = git@github.com:HONEY-TI/.ai.git
 	branch = main
+[submodule ".docker/infra-docker"]
+	path = .docker/infra-docker
+	url = git@github.com:HONEY-TI/infra-docker.git
