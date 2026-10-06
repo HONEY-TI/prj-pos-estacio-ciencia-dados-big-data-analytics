@@ -44,18 +44,16 @@ COPY .devcontainer/requirements.txt /usr/local/share/requirements.txt
 
 COPY .devcontainer/post-start.sh /usr/local/sbin/post-start.sh
 COPY .devcontainer/docker-entrypoint.sh /usr/local/sbin/docker-entrypoint.sh
-COPY .devcontainer/setup-codex.sh /usr/local/sbin/setup-codex.sh
+COPY ./.ai/setup-codex-any-user.sh /usr/local/sbin/setup-codex.sh
 RUN chmod 755 /usr/local/sbin/post-start.sh \
                 /usr/local/sbin/docker-entrypoint.sh \
                 /usr/local/sbin/setup-codex.sh
         
-
-
 # 🔐 Sudo sem senha
 RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}-dev \
     && chmod 0440 /etc/sudoers.d/${USERNAME}-dev
 
-# 🧾 Configuração do Git
+# 🧾 Configuração do Git'''
 RUN mkdir -p /home/${USERNAME} && \
     printf '[user]\n    name = Alex Ribeiro de Faria\n    email = 135660435+alexribeirofaria@github.com\n[safe]\n    directory = /workspace\n' \
     > /home/${USERNAME}/.gitconfig && \
@@ -116,6 +114,7 @@ exec s6-setuidgid "${APP_USER}" /opt/venv/bin/jupyter lab \
 EOF
 
 RUN chmod 755 /etc/services.d/jupyter/run
+
 
 # =============================================================================
 # Shell global: bash (/etc/bash.bashrc)
@@ -308,7 +307,8 @@ autoload -Uz add-zsh-hook
 add-zsh-hook precmd set_prompt
 EOF
 
-RUN touch ~/.zshrc
+RUN echo '[ -f /usr/local/sbin/auto-switch-user.sh ] && . /usr/local/sbin/auto-switch-user.sh' \
+    >> /etc/zsh/zshrc
 
 # =============================================================================
 # 🔄 AUTO SWITCH

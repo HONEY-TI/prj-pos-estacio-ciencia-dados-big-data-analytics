@@ -34,7 +34,7 @@ services:
     stdin_open: true
     tty: true
     healthcheck:
-      test: ["CMD-SHELL","curl -fsS http://localhost:9864/ >/dev/null || exit 1"]
+      test: ["CMD-SHELL","curl -fsS http://localhost:8787/ >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
