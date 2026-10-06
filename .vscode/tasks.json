@@ -1,31 +1,23 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Update Submodules",
-      "type": "shell",
-      "command": "${workspaceFolder}/.vscode/update-submodules",
-      "problemMatcher": [],
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "close": true
-      }
-    },
-    {
-      "label": "Init Docker",
-      "type": "shell",
-      //"command": "${workspaceFolder}/.vscode/init-docker",
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "close": true
-      },
-      "problemMatcher": []
-    },
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Initialize Docker Servers",
+            "type": "shell",
+            "command": "bash ${workspaceFolder}/.vscode/init-tasks",
+            "problemMatcher": [],
+            "isBackground": true,
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                //"reveal": "silent",
+                "panel": "dedicated",
+                "focus": false,
+                "close": true,
+                "showReuseMessage": false,
+                "echo": false
+            }
+        }
+    ]
 }

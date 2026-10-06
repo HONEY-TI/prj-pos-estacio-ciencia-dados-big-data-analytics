@@ -1,3 +1,53 @@
+# ================================
+# SECURITY / SECRETS
+# ================================
+.env
+.env.*
+*.env
+.claude/
+.claude
+.blackbox/
+.envrc
+.direnv/
+.secrets/
+secrets/
+vault/
+.vault/
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.der
+*.asc
+*.gpg
+1
+credentials.*
+auth.*
+apikey.*
+api_key.*
+token.*
+tokens.*
+secret.*
+secrets.*
+
+.aws/
+.azure/
+.gcp/
+
+firebase-adminsdk*.json
+service-account*.json
+google-services.json
+
+.ssh/
+*.kubeconfig
+
+*.tfstate
+*.tfstate.*
+
 # =========================
 # Python
 # =========================
@@ -190,3 +240,23 @@ assets/*
 .Rproj.user/
 .Renviron
 .claulde/
+
+
+# Development tools / AI assistants
+.streamlit/secrets.toml
+.fuse*
+**/.blackbox/
+**/.claude/
+**/.codex/
+**/.openclaude/
+.ai/
+!**/lib/
+**/AGENTS.md
+**/.xauth-devc
+# Environment / Secrets
+*.env
+
+# Pull requests
+**/pull-request/
+pull-request/**
+**/.system/
