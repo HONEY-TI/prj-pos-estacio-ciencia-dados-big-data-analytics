@@ -17,6 +17,11 @@ NODE_VOLUMES         := datanode-data namenode-data
 # Não existe                            -> compose up -d --build
 # Se o up falhar mas o container passou a existir (criado por outro
 # processo durante o build)             -> restart
+
+# Container existe (rodando ou parado)  -> restart
+# Não existe                            -> compose up -d --build
+# Se o up falhar mas o container passou a existir (criado por outro
+# processo durante o build)             -> restart
 # uso: $(call start_service,container,compose-file,Rótulo)
 define start_service
 	@exists() { docker ps -a --format '{{.Names}}' | grep -qx '$(1)'; }; \
@@ -48,18 +53,17 @@ define start_service
 	fi
 endef
 
-# Para qualquer container (exceto o dono) que esteja publicando a porta.
+# Para qualquer container que esteja publicando a porta,
+# inclusive o container informado como dono.
 # uso: $(call free_port,porta,container-dono)
 define free_port
-	@for c in $$(docker ps --filter "publish=$(1)" --format '{{.Names}}'); do \
-		if [ "$$c" != "$(2)" ]; then \
-			echo "⚠️ Porta $(1) em uso por '$$c', parando..."; \
-			docker stop "$$c" >/dev/null || true; \
-		fi; \
-	done
+for c in $$(docker ps --filter "publish=$(1)" --format '{{.Names}}'); do \
+	echo "⚠️ Porta $(1) em uso por '$$c', parando..."; \
+	docker stop "$$c" >/dev/null || true; \
+done
 endef
 
-# Espera um container ficar healthy (timeout de 5 min)
+# Espera um container ficar healthy
 # uso: $(call wait_healthy,container,Rótulo)
 define wait_healthy
 	@echo "Aguardando $(2) ficar saudável..."
@@ -68,13 +72,13 @@ define wait_healthy
 		[ "$$status" = "healthy" ] && echo "✅ $(2) saudável." && exit 0; \
 		sleep 2; \
 	done; \
-	echo "Timeout esperando $(2)."; exit 1
+	echo "Timeout esperando $(2)."; \
+	exit 1
 endef
 
 define start_rstudio
-	$(call free_port,9864,rstudio-pos-devcontainer)
 	$(call free_port,8787,rstudio-pos-devcontainer)
-	$(call free_port,8888,rstudio-pos-devcontainer)	
+	$(call free_port,8888,rstudio-pos-devcontainer)
 
 	@echo "🔎 Verificando container rstudio-pos-devcontainer..."; \
 	if docker inspect rstudio-pos-devcontainer >/dev/null 2>&1; then \
@@ -86,27 +90,23 @@ define start_rstudio
 		fi; \
 	fi
 
-	$(call start_service,rstudio-pos-devcontainer,$(RSTUDIO_COMPOSE))
+	$(call start_service,rstudio-pos-devcontainer,$(RSTUDIO_COMPOSE),RStudio)
 
-	echo "🚀 Aguardando RStudio iniciar..."; \
+	@echo "🚀 Aguardando RStudio iniciar..."; \
 	for i in $$(seq 1 30); do \
 		echo ""; \
 		echo "🔍 Tentativa $$i/30"; \
-		\
 		container_status=$$(docker inspect -f '{{.State.Status}}' rstudio-pos-devcontainer 2>/dev/null || echo "missing"); \
 		echo "   Container: $$container_status"; \
-		\
 		if [ "$$container_status" != "running" ]; then \
 			echo "❌ Container não está running."; \
 			sleep 2; \
 			continue; \
 		fi; \
-		\
 		echo "   🔌 Testando RStudio dentro do container..."; \
 		if docker exec rstudio-pos-devcontainer \
 			sh -c 'curl -fsS --max-time 3 http://127.0.0.1:8787/ >/dev/null 2>&1'; then \
 			echo "   ✅ RStudio respondeu dentro do container."; \
-			\
 			echo "   🌐 Testando porta 8787 pelo host..."; \
 			if curl -fsS --max-time 3 http://127.0.0.1:8787/ >/dev/null 2>&1; then \
 				echo "   ✅ RStudio respondeu pelo host."; \
@@ -119,15 +119,14 @@ define start_rstudio
 		else \
 			echo "   ⏳ RStudio ainda não iniciou na porta 8787 dentro do container."; \
 		fi; \
-		\
 		sleep 2; \
 	done; \
-	\
 	echo ""; \
 	echo "❌ RStudio não ficou disponível após 60 segundos."; \
 	echo ""; \
 	echo "📋 Diagnóstico:"; \
-	docker inspect -f 'Container={{.State.Status}} Health={{.State.Health.Status}}' rstudio-pos-devcontainer 2>/dev/null || true; \
+	docker inspect -f 'Container={{.State.Status}} Health={{.State.Health.Status}}' \
+		rstudio-pos-devcontainer 2>/dev/null || true; \
 	echo ""; \
 	echo "🔌 Porta 8787 dentro do container:"; \
 	docker exec rstudio-pos-devcontainer sh -c \
@@ -141,17 +140,18 @@ define start_rstudio
 	echo ""; \
 	echo "📜 Últimos logs:"; \
 	docker logs --tail 100 rstudio-pos-devcontainer 2>&1 || true; \
-	\
 	echo ""; \
 	echo "⚠️ Parando somente RStudio..."; \
 	docker stop rstudio-pos-devcontainer >/dev/null 2>&1 || true; \
-	$(COMPOSE) -f $(RSTUDIO_COMPOSE) down; \
+	$(COMPOSE) -f $(RSTUDIO_COMPOSE) down || true
+
+	$(call free_port,8787,rstudio-pos-devcontainer)
+	$(call free_port,8888,rstudio-pos-devcontainer)
+
 	$(MAKE) prune-clean
 endef
 
-
-
-up:	
+up:
 	$(call start_rstudio)
 
 	$(call start_service,namenode,$(NAMENODE_COMPOSE),NameNode)
@@ -165,10 +165,9 @@ up:
 
 	$(call start_service,spark-worker,$(SPARKWORKER_COMPOSE),Spark Worker)
 	$(call wait_healthy,spark-worker,Spark Worker)
-	
-#$(call start_service,rstudio-dev-base,$(RSTUDIO_COMPOSE),RS Studio)
+
+# $(call start_service,rstudio-dev-base,$(RSTUDIO_COMPOSE),RStudio)
 	@echo "🟢 Infraestrutura compartilhada pronta."
-#	-exit 0
 
 # Só roda se você chamar explicitamente. Nunca é chamado pelo `up`.
 down:
