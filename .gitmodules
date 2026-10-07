@@ -1,17 +1,17 @@
 [submodule "sem1-linguagem-python-big-data"]
     path = projects/sem1-linguagem-python-big-data
     url = git@github.com:HONEY-TI/sem1-linguagem-python-big-data.git
-    branch = master
+    branch = main
 
 [submodule "sem1-business-analytics-npg7688"]
     path = projects/sem1-business-analytics-npg7688
     url = git@github.com:HONEY-TI/sem1-business-analytics-npg7688.git
-    branch = master
+    branch = main
 
 [submodule "sem1-aprendizado-profundo-deep-learning"]
     path = projects/sem1-aprendizado-profundo-deep-learning
     url = git@github.com:HONEY-TI/sem1-aprendizado-profundo-deep-learning.git
-    branch = master
+    branch = main
 
 [submodule "sem2-tecnologias-avancadas"]
     path = projects/sem2-tecnologias-avancadas
