@@ -7,7 +7,7 @@ services:
     image: alexfariakof/datanode
     hostname: datanode
     #command: ["hdfs", "datanode"]
-    restart: unless-stopped
+    restart: no
     ports:
       - "9864:9864"
     networks:

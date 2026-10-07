@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# ============================================================
+# Sequential Repository Initialization
+# ============================================================
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+LOCK_FILE="${ROOT_DIR}/.init-sequence.lock"
+LOG_FILE="${ROOT_DIR}/.init-sequence.log"
+
+BOOTSTRAP="${ROOT_DIR}/.ai/tools/bootstrap.sh"
+DOCKER_INFRA="${ROOT_DIR}/.docker-infra/init-docker-infra"
+DOCKER_SERVERS="${ROOT_DIR}/.docker/init-docker-servers"
+
+# ------------------------------------------------------------
+# Logging
+# ------------------------------------------------------------
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+}
+
+# ------------------------------------------------------------
+# Error handling
+# ------------------------------------------------------------
+
+on_error() {
+    local exit_code=$?
+    local line=$1
+
+    log "ERRO: execução interrompida na linha ${line} (exit=${exit_code})"
+    exit "$exit_code"
+}
+
+trap 'on_error $LINENO' ERR
+
+# ------------------------------------------------------------
+# Lock
+# ------------------------------------------------------------
+
+exec 9>"$LOCK_FILE"
+
+if ! flock -n 9; then
+    log "ERRO: outra inicialização já está em execução."
+    log "Lock: $LOCK_FILE"
+    exit 1
+fi
+
+# ------------------------------------------------------------
+# Cleanup
+# ------------------------------------------------------------
+
+cleanup() {
+    rm -f "$LOCK_FILE"
+}
+
+trap cleanup EXIT
+
+# ------------------------------------------------------------
+# Validate scripts
+# ------------------------------------------------------------
+
+validate_script() {
+    local script="$1"
+
+    if [[ ! -f "$script" ]]; then
+        log "ERRO: script não encontrado: $script"
+        exit 1
+    fi
+
+    if [[ ! -x "$script" ]]; then
+        log "ERRO: script não executável: $script"
+        log "Execute: chmod +x \"$script\""
+        exit 1
+    fi
+}
+
+# ------------------------------------------------------------
+# Execute one step
+# ------------------------------------------------------------
+
+run_step() {
+    local name="$1"
+    local script="$2"
+
+    log "============================================================"
+    log "INICIANDO: $name"
+    log "SCRIPT:    $script"
+    log "============================================================"
+
+    validate_script "$script"
+
+    "$script"
+
+    log "------------------------------------------------------------"
+    log "CONCLUÍDO: $name"
+    log "------------------------------------------------------------"
+}
+
+# ------------------------------------------------------------
+# Main
+# ------------------------------------------------------------
+
+log ""
+log "============================================================"
+log " INICIALIZAÇÃO SEQUENCIAL"
+log "============================================================"
+log "ROOT: $ROOT_DIR"
+log ""
+
+# 1. Repository Bootstrap
+run_step \
+    "Repository Bootstrap" \
+    "$BOOTSTRAP"
+
+# 2. Docker Infrastructure
+run_step \
+    "Docker Infra Initialize" \
+    "$DOCKER_INFRA"
+
+# 3. Docker Servers
+run_step \
+    "Docker Servers Initialize" \
+    "$DOCKER_SERVERS"
+
+log ""
+log "============================================================"
+log " INICIALIZAÇÃO CONCLUÍDA COM SUCESSO"
+log "============================================================"

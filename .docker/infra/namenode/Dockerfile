@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-jdk
+
 ENV HADOOP_VERSION=3.4.3
 ENV HADOOP_HOME=/opt/hadoop
 ENV PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH

@@ -18,11 +18,19 @@ log() {
 }
 
 is_running_inside_container() {
+  if [ -n "${REMOTE_CONTAINERS:-}" ] || [ -n "${CODESPACES:-}" ] || [ -n "${IN_DEVCONTAINER:-}" ]; then
+    return 0
+  fi
+
   if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
     return 0
   fi
 
-  if [ -r /proc/1/cgroup ] && grep -qE '(docker|containerd|kubepods)' /proc/1/cgroup 2>/dev/null; then
+  if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --container --quiet; then
+    return 0
+  fi
+
+  if [ -r /proc/1/cgroup ] && grep -qaE '(docker|containerd|kubepods|libpod)' /proc/1/cgroup 2>/dev/null; then
     return 0
   fi
 

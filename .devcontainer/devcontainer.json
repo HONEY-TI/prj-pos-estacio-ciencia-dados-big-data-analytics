@@ -6,19 +6,20 @@
   "service": "rstudio-pos-devcontainer",
   "remoteUser": "rstudio",
   "updateRemoteUserUID": false,
-  //"initializeCommand": "bash .devcontainer/init-docker",
-  "postStartCommand": "sudo /usr/local/bin/setup-codex.sh && codex",
   "workspaceFolder": "/workspace",
-  "forwardPorts": [
-    8787,
-    8888,
-    7077,
-    8081,
-    9870,
-    9000,
-    9864
-  ],
+  "initializeCommand": "f=$(ls -t \"${XDG_RUNTIME_DIR}\"/.mutter-Xwaylandauth.* 2>/dev/null | head -n1); if [ -n \"$f\" ]; then cp \"$f\" .devcontainer/.xauth-devc; else : > .xauth-devc; fi",
+  "postStartCommand": "setup-codex.sh",
+  "postCreateCommand": "sudo post-start.sh",
+  "shutdownAction": "stopCompose",
+  "containerEnv": {
+    "IN_DEVCONTAINER": "true",
+    "DISPLAY": ":0",
+    "XAUTHORITY": "/tmp/.xauth-devc"
+  },
   "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+    "source=${localWorkspaceFolder}/.devcontainer/.xauth-devc,target=/tmp/.xauth-devc,type=bind,readonly",
+    "source=vscode-server-rstudio,target=/home/rstudio/.vscode-server,type=volume",
     "source=${localEnv:HOME}/.ssh,target=/home/rstudio/.ssh,type=bind"
   ],
   "customizations": {
