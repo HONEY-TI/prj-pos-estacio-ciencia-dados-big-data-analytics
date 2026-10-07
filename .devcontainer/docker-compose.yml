@@ -1,25 +1,28 @@
 services:
-  rstudio-pos-devcontainer:
+  rstudio-pos-devcontainer:    
     env_file:
       - .env
     build:
-      context: .
-      dockerfile: Dockerfile
-    image: rstudio-pos-devcontainer
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        ENABLE_SWITCH_USER: "true"
+        USERNAME: rstudio
+    image: rstudio-pos-devcontainer:latest
     container_name: rstudio-pos-devcontainer  # docker exec -it rstudio-devcontaier bash
     environment:
       PASSWORD: "toor"
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       SPARK_MASTER: spark://spark-master:7077      
+      XAUTHORITY: /tmp/.mutter-Xwaylandauth-devc
     ports:
       - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
       - "8888:8888" # http://localhost:8888/
     volumes:
-      - ..:/workspace:cached      
-      - ../src:/home/rstudio/src/r:cached
-      - ../projects/sem2-ciclo-de-vida-e-linguagem-r/TEMA 3/workspace:/home/rstudio/workspace:cached      
-      - vscode-extensions:/$HOME/.vscode-server/extensions
-      - shell_history:/home/$HOME/.zsh_history            
+      - ..:/workspace:rw      
+      - ../src:/home/rstudio/src/r:rw
+      - ../projects/sem2-ciclo-de-vida-e-linguagem-r/TEMA 3/workspace:/home/rstudio/workspace:rw./.a        
+      - vscode-extensions-shared:/home/rstudio/.vscode-server/extensions:rw
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -28,7 +31,15 @@ services:
       - apparmor=unconfined
       - seccomp:unconfined
     restart: unless-stopped
-    #entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]    
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:8787/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
     networks:
       - rs-network    
     logging:
@@ -38,9 +49,7 @@ services:
         max-file: "1"
 
 volumes:
-  vscode-extensions:
-    name: vscode-extensions-rstudio
-  shell_history:
+  vscode-extensions-shared:    
     external: true
 networks:
   rs-network:

@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
-if [ -f .gitmodules ]; then
-  echo "🔄 Syncing submodules..."
+set -euo pipefail
+
+echo "🔄 [Insights] Inicializando submódulos..."
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)"
+cd "$PROJECT_ROOT"
+
+if [ -f "$PROJECT_ROOT/.gitmodules" ]; then
   git submodule update --init --recursive
+  echo "✅ Submódulos disponíveis."
+else
+  echo "ℹ️ Nenhum arquivo .gitmodules encontrado."
 fi
