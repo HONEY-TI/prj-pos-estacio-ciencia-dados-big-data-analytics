@@ -12,7 +12,6 @@ LOCK_FILE="${ROOT_DIR}/.init-sequence.lock"
 LOG_FILE="${ROOT_DIR}/.init-sequence.log"
 
 BOOTSTRAP="${ROOT_DIR}/.ai/tools/bootstrap.sh"
-DOCKER_INFRA="${ROOT_DIR}/.docker-infra/init-docker-infra"
 DOCKER_SERVERS="${ROOT_DIR}/.docker/init-docker-servers"
 
 # ------------------------------------------------------------
