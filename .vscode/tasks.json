@@ -2,16 +2,21 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Initialize Docker Servers",
+            "label": "Inicialização automática",
             "type": "shell",
-            "command": "bash ${workspaceFolder}/.vscode/init-tasks",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/.vscode/init-tasks"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [],
-            "isBackground": true,
             "runOptions": {
                 "runOn": "folderOpen"
             },
             "presentation": {
-                "reveal": "silent",
+                "reveal": "always",
                 "panel": "dedicated",
                 "focus": false,
                 "close": true,
