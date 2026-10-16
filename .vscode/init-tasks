@@ -13,7 +13,6 @@ LOG_FILE="${ROOT_DIR}/.init-sequence.log"
 
 BOOTSTRAP="${ROOT_DIR}/.ai/tools/bootstrap.sh"
 DOCKER_SERVERS="${ROOT_DIR}/.docker/init-docker-servers"
-
 # ------------------------------------------------------------
 # Logging
 # ------------------------------------------------------------
@@ -115,12 +114,7 @@ run_step \
     "Repository Bootstrap" \
     "$BOOTSTRAP"
 
-# 2. Docker Infrastructure
-run_step \
-    "Docker Infra Initialize" \
-    "$DOCKER_INFRA"
-
-# 3. Docker Servers
+# 2. Docker Servers
 run_step \
     "Docker Servers Initialize" \
     "$DOCKER_SERVERS"
