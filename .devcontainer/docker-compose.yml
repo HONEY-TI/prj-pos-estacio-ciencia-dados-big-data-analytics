@@ -1,28 +1,38 @@
 services:
   rstudio-pos-devcontainer:    
-    env_file:
-      - .env
+    container_name: rstudio-pos-devcontainer  # docker exec -it rstudio-devcontaier bash
+    image: rstudio-pos-devcontainer:latest
+    tty: true
+    stdin_open: true 
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
         ENABLE_SWITCH_USER: "true"
         USERNAME: rstudio
-    image: rstudio-pos-devcontainer:latest
-    container_name: rstudio-pos-devcontainer  # docker exec -it rstudio-devcontaier bash
+        WORKSPACE: /workspace
     environment:
-      PASSWORD: "toor"
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?GITHUB_TOKEN não definido no .env}
+      XAUTHORITY: /tmp/.xauth-devc
+      TZ: America/Sao_Paulo
+      PASSWORD: "${RSTUDIO_PASSWORD:-toor}"
       SPARK_MASTER: spark://spark-master:7077      
-      XAUTHORITY: /tmp/.mutter-Xwaylandauth-devc
+      JUPYTER_IP: "0.0.0.0"
+      JUPYTER_PORT: "8888"
+      JUPYTER_TOKEN: ""
+      JUPYTER_PASSWORD_REQUIRED: "False"
+      JUPYTER_ALLOW_ORIGIN: "*"
+    env_file:
+      - .env # lembre-se de criar .env novo na pasta .devcontainer 
     ports:
       - "8787:8787" # http://localhost:8787/ user: rstudio password: toor
       - "8888:8888" # http://localhost:8888/
     volumes:
-      - ..:/workspace:rw      
-      - ../src:/home/rstudio/src/r:rw
-      - ../projects/sem2-ciclo-de-vida-e-linguagem-r/TEMA 3/workspace:/home/rstudio/workspace:rw./.a        
-      - vscode-extensions-shared:/home/rstudio/.vscode-server/extensions:rw
+      - ..:/workspace:cached      
+      - ../src:/home/rstudio/src/r:cached      
+      - vscode-extensions-shared:/home/rstudio/.vscode-server/extensions:cached
+      - shell_history-shared:/home/rstudio/shell_history:rw
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -31,17 +41,14 @@ services:
       - apparmor=unconfined
       - seccomp:unconfined
     restart: unless-stopped
-    stdin_open: true
-    tty: true
+    networks:
+      - rs-network
     healthcheck:
       test: ["CMD-SHELL","curl -fsS http://localhost:8787/ >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
       start_period: 20s
-
-    networks:
-      - rs-network    
     logging:
       driver: json-file
       options:
@@ -50,6 +57,8 @@ services:
 
 volumes:
   vscode-extensions-shared:    
+    external: true
+  shell_history-shared:
     external: true
 networks:
   rs-network:
