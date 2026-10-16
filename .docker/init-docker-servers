@@ -2,58 +2,41 @@
 set -euo pipefail
 
 # ─────────────────────────────────────────────────────────────────────────
-# init-docker
+# init-docker-servers
 #
-# Roda `make up` em .docker/infra, mas apenas se estiver fora de um
-# container Docker (ou seja, direto no host).
+# Roda `make up` em .docker, somente no host (fora de container).
+# A lógica de verificação, recuperação e ordem de inicialização fica
+# toda no Makefile.
 # ─────────────────────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
 MAKE_INFRA_DIR="${WORKSPACE_DIR}/.docker"
 
 log() {
   printf '[init-docker] %s\n' "$1"
 }
 
-is_running_inside_container() {
-  if [ -n "${REMOTE_CONTAINERS:-}" ] || [ -n "${CODESPACES:-}" ] || [ -n "${IN_DEVCONTAINER:-}" ]; then
-    return 0
-  fi
-
-  if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
-    return 0
-  fi
-
-  if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --container --quiet; then
-    return 0
-  fi
-
-  if [ -r /proc/1/cgroup ] && grep -qaE '(docker|containerd|kubepods|libpod)' /proc/1/cgroup 2>/dev/null; then
-    return 0
-  fi
-
-  return 1
+is_inside_container() {
+  [ -n "${IN_DEVCONTAINER:-}" ] \
+    || [ -n "${REMOTE_CONTAINERS:-}" ] \
+    || [ -n "${CODESPACES:-}" ] \
+    || [ -f /.dockerenv ] \
+    || [ -f /run/.containerenv ]
 }
 
 main() {
-  if is_running_inside_container; then
-    log "Executando dentro de um container Docker — pulando inicialização (deve rodar no host)."
+  if is_inside_container; then
+    log "Dentro de um container; pulando (deve rodar no host)."
     exit 0
   fi
 
-  if [ ! -d "$MAKE_INFRA_DIR" ]; then
-    log "Diretório não encontrado: ${MAKE_INFRA_DIR}"
-    exit 1
-  fi
-
-  if [ ! -f "$MAKE_INFRA_DIR/Makefile" ]; then
+  if [ ! -f "${MAKE_INFRA_DIR}/Makefile" ]; then
     log "Makefile não encontrado: ${MAKE_INFRA_DIR}/Makefile"
     exit 1
   fi
 
-  log "Fora do container — rodando 'make up' em ${MAKE_INFRA_DIR}"
+  log "Rodando 'make up' em ${MAKE_INFRA_DIR}"
   make -C "$MAKE_INFRA_DIR" up
 }
 
