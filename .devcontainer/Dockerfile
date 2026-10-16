@@ -1,314 +1,113 @@
-FROM alexfariakof/rstudio-base:latest AS base
-ARG USERNAME="rstudio" 
-RUN USERNAME=${USERNAME} 
-EXPOSE 9864
+FROM alexfariakof/rstudio-base:latest AS base     
+ARG USERNAME=rstudio
+ENV USERNAME=${USERNAME}
+ARG WORKSPACE=/workspace
+ENV WORKSPACE=${WORKSPACE}
+
 # ==========================================
 # Dependências do sistema
 # ==========================================
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        sudo \ 
+        xterm \
         iptables \
         ipset \
         iproute2 \
         iputils-ping \
         dnsutils \
+        aggregate \
+        gh \
         git \
         git-lfs \
-        gh \
         openssh-client \
         jq \
+        procps \
         xdg-utils \
         xauth \
         xclip \
         xsel \
-        x11-apps \
-        x11-utils \
-        gnupg \    
-        build-essential \
-        nano \
+        bubblewrap \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git lfs install --system
-RUN npm install -g npm@12.0.2 \
-    && npm install -g @openai/codex@latest --include=optional \
+
+# =============================================================================
+# Instalação/atualização das dependências Python
+# =============================================================================
+COPY .devcontainer/requirements.in /usr/local/share/requirements.in
+RUN set -e; \
+    PIP="/opt/venv/bin/python -m pip"; \
+    OUT="$($PIP install --dry-run --no-cache-dir -r /usr/local/share/requirements.in 2>&1)"; \
+    case "$OUT" in \
+        *"Would install"*) \
+            echo "Pacotes ausentes ou desatualizados:"; \
+            echo "$OUT" | grep "Would install"; \
+            $PIP install --no-cache-dir -r /usr/local/share/requirements.in; \
+            chown -R ${USERNAME}:${USERNAME} /opt/venv ;; \
+        *) echo "Requirements já satisfeitos, nada a instalar." ;; \
+    esac; \
+    rm -f /usr/local/share/requirements.in
+    
+# =============================================================================
+# Instalação codex cli
+# =============================================================================
+RUN npm install -g @openai/codex@latest --include=optional \
     && codex --version
 
-RUN sed -i 's|^SHELL=.*|SHELL=/usr/bin/zsh|' /etc/default/useradd \
-    && sed -i 's|^DSHELL=.*|DSHELL=/usr/bin/zsh|' /etc/adduser.conf \
-    && awk -F: '$7 == "/bin/bash" || $7 == "/usr/bin/bash" || $7 == "/bin/sh" {print $1}' /etc/passwd \
-       | xargs -r -I{} usermod -s /usr/bin/zsh {}
+# =============================================================================
+# SSH
+# =============================================================================
+RUN mkdir -p /home/${USERNAME}/.ssh \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh \
+    && chmod 700 /home/${USERNAME}/.ssh
 
-COPY .devcontainer/requirements.txt /usr/local/share/requirements.txt
+# =============================================================================
+# Shell history global: 
+# =============================================================================
+RUN mkdir -p /home/${USERNAME}/shell_history \
+    && touch /home/${USERNAME}/shell_history/.bash_history \
+             /home/${USERNAME}/shell_history/.zsh_history \
+    && rm -rf /home/${USERNAME}/.bash_history \
+               /home/${USERNAME}/.zsh_history \
+    && ln -s /home/${USERNAME}/shell_history/.bash_history \
+             /home/${USERNAME}/.bash_history \
+    && ln -s /home/${USERNAME}/shell_history/.zsh_history \
+             /home/${USERNAME}/.zsh_history \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/shell_history \
+    && chmod 664 /home/${USERNAME}/.bash_history \
+                 /home/${USERNAME}/.zsh_history \
+    && chmod 664 /home/${USERNAME}/shell_history/.bash_history \
+                 /home/${USERNAME}/shell_history/.zsh_history
 
-COPY .devcontainer/post-start.sh /usr/local/sbin/post-start.sh
-COPY .devcontainer/docker-entrypoint.sh /usr/local/sbin/docker-entrypoint.sh
-COPY ./.ai/setup-codex-any-user.sh /usr/local/sbin/setup-codex.sh
+RUN mkdir -p /home/${USERNAME}/.vscode-server  \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server  \
+    && chmod 770 /home/${USERNAME}/.vscode-server 
+
+COPY .ai/tools/rstudio-entrypoint.sh /usr/local/sbin/docker-entrypoint.sh
+RUN chmod 700 /usr/local/sbin/docker-entrypoint.sh
+RUN chmod +x /usr/local/sbin/docker-entrypoint.sh
+
+COPY .ai/setup-codex-any-user.sh /usr/local/sbin/setup-codex.sh
+COPY .ai/tools/post-start.sh /usr/local/sbin/post-start.sh
+COPY .ai/tools/open-user-shell.sh /usr/local/sbin/open-user-shell.sh
+
 RUN chmod 755 /usr/local/sbin/post-start.sh \
-                /usr/local/sbin/docker-entrypoint.sh \
-                /usr/local/sbin/setup-codex.sh
-        
-# 🔐 Sudo sem senha
-RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}-dev \
-    && chmod 0440 /etc/sudoers.d/${USERNAME}-dev
+            /usr/local/sbin/setup-codex.sh \
+            /usr/local/sbin/open-user-shell.sh
 
-# 🧾 Configuração do Git'''
-RUN mkdir -p /home/${USERNAME} && \
-    printf '[user]\n    name = Alex Ribeiro de Faria\n    email = 135660435+alexribeirofaria@github.com\n[safe]\n    directory = /workspace\n' \
-    > /home/${USERNAME}/.gitconfig && \
-    chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.gitconfig
+RUN chmod +x /usr/local/sbin/post-start.sh \
+            /usr/local/sbin/setup-codex.sh \
+            /usr/local/sbin/open-user-shell.sh
 
-# =============================================================================
-# GITHUB SET 
-# ============================================================================
-ARG GITHUB_TOKEN
-RUN if [ -n "$GITHUB_TOKEN" ]; then \
-      echo "${GITHUB_TOKEN}" | gh auth login --with-token || echo "gh auth falhou, seguindo sem autenticar"; \
-    else \
-      echo "GITHUB_TOKEN não fornecido, pulando gh auth login"; \
-    fi
+RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo "${USERNAME} ALL=(root) NOPASSWD: \
+        /usr/local/sbin/setup-codex.sh, \
+        /usr/local/sbin/open-user-shell.sh" \        
+        > /etc/sudoers.d/${USERNAME}-dev \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}-dev \
+    && visudo -cf /etc/sudoers.d/${USERNAME}-dev
 
-# =============================================================================
-# 🪐 Jupyter Lab como serviço s6
-# =============================================================================
-ARG JUPYTER_NOTEBOOK_DIR=""
-ARG PROJECT_WORKSPACE=""
-ARG JUPYTER_IP="0.0.0.0"
-ARG JUPYTER_PORT="8888"
-ARG JUPYTER_TOKEN=""
-ARG JUPYTER_PASSWORD_REQUIRED="False"
-ARG JUPYTER_ALLOW_ORIGIN="*"
-
-ENV JUPYTER_NOTEBOOK_DIR="${JUPYTER_NOTEBOOK_DIR}"
-ENV PROJECT_WORKSPACE="${PROJECT_WORKSPACE}"
-ENV JUPYTER_IP="${JUPYTER_IP}"
-ENV JUPYTER_PORT="${JUPYTER_PORT}"
-ENV JUPYTER_TOKEN="${JUPYTER_TOKEN}" \
-    JUPYTER_PASSWORD_REQUIRED="${JUPYTER_PASSWORD_REQUIRED}" \
-    JUPYTER_ALLOW_ORIGIN="${JUPYTER_ALLOW_ORIGIN}"
-
-RUN mkdir -p /etc/services.d/jupyter \
-    && cat > /etc/services.d/jupyter/run <<'EOF'
-#!/usr/bin/with-contenv bash
-
-unset JUPYTER_TOKEN JUPYTER_PASSWORD
-
-APP_USER="${USERNAME:-rstudio}"
-export HOME="/home/${APP_USER}"
-
-NOTEBOOK_DIR="${JUPYTER_NOTEBOOK_DIR:-${PROJECT_WORKSPACE:-${HOME}}}"
-[ -d "${NOTEBOOK_DIR}" ] || NOTEBOOK_DIR="${HOME}"
-cd "${NOTEBOOK_DIR}"
-
-exec s6-setuidgid "${APP_USER}" /opt/venv/bin/jupyter lab \
-    --ip="${JUPYTER_IP:-0.0.0.0}" \
-    --port="${JUPYTER_PORT:-8888}" \
-    --no-browser \
-    --notebook-dir="${NOTEBOOK_DIR}" \
-    --IdentityProvider.token="${JUPYTER_TOKEN}" \
-    --ServerApp.password="" \
-    --ServerApp.password_required="${JUPYTER_PASSWORD_REQUIRED}" \
-    --ServerApp.allow_origin="${JUPYTER_ALLOW_ORIGIN}"
-
-EOF
-
-RUN chmod 755 /etc/services.d/jupyter/run
-
-
-# =============================================================================
-# Shell global: bash (/etc/bash.bashrc)
-# =============================================================================
-RUN cat >> /etc/bash.bashrc <<'EOF'
-
-export HISTFILE="$HOME/shell_history/.zsh_history"
-export VIRTUAL_ENV="/opt/venv"
-export PYSPARK_PYTHON="${VIRTUAL_ENV}/bin/python"
-export PYSPARK_DRIVER_PYTHON="${VIRTUAL_ENV}/bin/python"
-export PATH="/bin:/usr/local/bin:/usr/local/sbin:${VIRTUAL_ENV}/bin:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:$HOME/.local/bin:$PATH"
-
-# =========================================================
-# ALIASES
-# =========================================================
-alias cls='clear'
-alias py='python3'
-alias ll='eza -l -h --group --group-directories-first'
-alias la='eza -la -hs --group --group-directories-first'
-alias lt='eza --tree --level=2 --group --group-directories-first'
-
-function ls() {
-    command eza \
-        -la \
-        -h \
-        --group \
-        --group-directories-first \
-        --color=auto \
-        "$@"
-}
-
-function lsh() {
-    local dir="${1:-.}"
-
-    command eza \
-        -la \
-        -h \
-        --group \
-        --group-directories-first \
-        --sort=size \
-        --color=auto \
-        "$dir"
-}
-
-
-# ==========================================
-# VENV + GIT BRANCH NO PROMPT
-# ==========================================
-MY_VENV="/opt/venv"
-
-parse_git_branch() {
-    local branch
-    branch=$(git branch --show-current 2>/dev/null)
-
-    [ -n "$branch" ] && printf " (%s)" "$branch"
-}
-
-set_venv_prompt() {
-    local venv_prompt=""
-
-    if [[ -n "${VIRTUAL_ENV:-}" ]]; then
-        venv_prompt='\[\e[1;31m\](venv)\[\e[0m\] '
-    fi
-
-    PS1='\[\e[1;32m\]┌──\[\e[0m\] '"$venv_prompt"\
-'\[\e[0;37m\](\[\e[1;34m\]\u\[\e[0;37m\]㉿\[\e[1;32m\]\h\[\e[0;37m\])\[\e[0m\]-'\
-'\[\e[0;37m\][\w\[\e[1;33m\]$(parse_git_branch)\[\e[0;37m\]]\[\e[0m\]'\
-'\n'\
-'\[\e[1;32m\]└─\[\e[0m\]\$ '
-}
-
-
-function activate() {
-    if [ -f "$MY_VENV/bin/activate" ]; then
-        source "$MY_VENV/bin/activate"
-        set_venv_prompt
-    else
-        echo "Erro: virtualenv não encontrado em $MY_VENV"
-        return 1
-    fi
-}
-
-function desactive() {
-    if [[ -n "$VIRTUAL_ENV" ]] && type deactivate >/dev/null 2>&1; then
-        deactivate
-        set_venv_prompt
-    else
-        echo "Nenhum virtualenv ativo."
-    fi
-}
-
-set_venv_prompt
-EOF
-
-# =============================================================================
-# Shell global: zsh (/etc/zsh/zshrc)
-# =============================================================================
-RUN cat >> /etc/zsh/zshrc <<'EOF'
-export HISTFILE="$HOME/shell_history/.zsh_history"
-export VIRTUAL_ENV="/opt/venv"
-export PYSPARK_PYTHON="${VIRTUAL_ENV}/bin/python"
-export PYSPARK_DRIVER_PYTHON="${VIRTUAL_ENV}/bin/python"
-export PATH="/bin:/usr/local/bin:/usr/local/sbin:${VIRTUAL_ENV}/bin:${SPARK_HOME}/bin:${SPARK_HOME}/sbin:$HOME/.local/bin:$PATH"
-
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=10000
-SAVEHIST=20000
-
-setopt APPEND_HISTORY
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_REDUCE_BLANKS
-setopt PROMPT_SUBST
-
-alias cls='clear'
-alias py='python3'
-alias ll='eza -lh --group --group-directories-first'
-alias la='eza -lah --group --group-directories-first'
-alias lt='eza --tree --level=2 --group'
-
-
-function ls() {
-    command eza \
-        -la \
-        -h \
-        --group \
-        --group-directories-first \
-        --color=auto \
-        "$@"
-}
-
-function lsh() {
-    local dir="${1:-.}"
-
-    command eza \
-        -la \
-        -h \
-        --group \
-        --group-directories-first \
-        --sort=size \
-        --color=auto \
-        "$dir"
-}
-
-MY_VENV="/opt/venv"
-
-activate() {
-    if [[ -f "$MY_VENV/bin/activate" ]]; then
-        source "$MY_VENV/bin/activate"
-    else
-        echo "Erro: virtualenv não encontrado em $MY_VENV"
-        return 1
-    fi
-}
-
-desactive() {
-    if [[ -n "$VIRTUAL_ENV" ]] && type deactivate >/dev/null 2>&1; then
-        deactivate
-    else
-        echo "Nenhum virtualenv ativo."
-    fi
-}
-
-set_prompt() {
-    local git_branch
-    git_branch=$(git branch --show-current 2>/dev/null)
-
-    PROMPT=""
-    PROMPT+="%F{%(#.blue.green)}┌── "
-
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-        PROMPT+="%F{red}%B($(basename "$VIRTUAL_ENV"))%b%f "
-    fi
-
-    PROMPT+="(%B%F{%(#.red.blue)}%n㉿%m%b%F{%(#.blue.green)})"
-    PROMPT+="-[%B%F{reset}%~%b%F{%(#.blue.green)}"
-
-    if [[ -n "$git_branch" ]]; then
-        PROMPT+=" %F{yellow}%B(${git_branch})%b%F{%(#.blue.green)}"
-    fi
-
-    PROMPT+="]"
-    PROMPT+=$'\n'
-    PROMPT+="└─%B%(#.%F{red}#.%F{blue}\$)%b%F{reset} "
-}
-
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd set_prompt
-EOF
-
-RUN echo '[ -f /usr/local/sbin/auto-switch-user.sh ] && . /usr/local/sbin/auto-switch-user.sh' \
-    >> /etc/zsh/zshrc
 
 # =============================================================================
 # 🔄 AUTO SWITCH
@@ -358,6 +157,10 @@ RUN printf '%s\n' \
     && mkdir -p /etc/zsh \
     && echo '[ -f /usr/local/sbin/auto-switch-user.sh ] && . /usr/local/sbin/auto-switch-user.sh' >> /etc/zsh/zshrc
 
+RUN chsh -s /bin/zsh 2>/dev/null || true;
+
+USER root
+WORKDIR ${WORKSPACE}
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["/init"]
 
